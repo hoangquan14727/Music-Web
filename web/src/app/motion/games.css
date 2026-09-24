@@ -1,0 +1,101 @@
+/* Game effects (on-tap games, feedback, results). Imported last from globals.css. */
+
+/* Intro art drops in and settles. Transform only, so it paints at once (LCP). */
+.game-drop {
+  animation: game-drop 0.7s var(--ease-soft) both;
+}
+@keyframes game-drop {
+  0% {
+    transform: translateY(-56px) scale(0.92);
+  }
+  55% {
+    transform: translateY(8px) scale(1.04, 0.95);
+  }
+  78% {
+    transform: translateY(-4px) scale(0.99, 1.01);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+/* "Thử lại nhé!" and hints: soft fade + small shake (no red, no flash). */
+.game-retry {
+  animation:
+    fade-in 0.25s var(--ease-soft) both,
+    shake-soft 0.6s ease-in-out 0.05s;
+}
+
+/* Check stamp on a correct card: lands from big and tilted. */
+.game-stamp {
+  animation: game-stamp 0.5s var(--ease-bounce) 0.1s both;
+}
+@keyframes game-stamp {
+  0% {
+    opacity: 0;
+    transform: scale(1.8) rotate(-25deg);
+  }
+  60% {
+    opacity: 1;
+  }
+  100% {
+    transform: none;
+  }
+}
+
+/* Result stars pop in one after another (--i on the star). */
+.game-star {
+  animation: game-star 0.6s var(--ease-bounce) calc(300ms + var(--i, 0) * 200ms) both;
+}
+@keyframes game-star {
+  from {
+    opacity: 0;
+    transform: scale(0.2) rotate(-60deg);
+  }
+}
+
+/* One-shot confetti rain on the result screen (~2 s). */
+.game-rain {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  overflow: hidden;
+  pointer-events: none;
+}
+.game-rain > span {
+  position: absolute;
+  top: 0;
+  width: 0.55rem;
+  height: 0.8rem;
+  border-radius: 2px;
+  background: var(--c);
+  animation: game-fall var(--dur) cubic-bezier(0.3, 0.6, 0.5, 1) var(--delay) both;
+}
+.game-rain > span:nth-child(3n) {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+}
+@keyframes game-fall {
+  0% {
+    opacity: 0;
+    transform: translate(0, -6vh) rotate(0);
+  }
+  10%,
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--fx), 100vh) rotate(var(--fr));
+  }
+}
+
+:root[data-motion="off"] .game-rain {
+  display: none;
+}
+@media print {
+  .game-rain {
+    display: none;
+  }
+}

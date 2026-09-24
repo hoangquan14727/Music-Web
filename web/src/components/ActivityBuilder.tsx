@@ -8,6 +8,7 @@ import PrintButton from "./PrintButton";
 import SoundCard from "./SoundCard";
 import { AGES, ChipGroup } from "./TeacherSuggestions";
 import { getGroup, groups, groupStyle, PAIR_GROUP, pairs, soundsIn } from "@/lib/data";
+import { ripple } from "@/lib/motion";
 
 // Pictures per question in "Nghe – chọn hình": fewer for younger children.
 const PICTURES: Record<string, number> = { "3-4": 2, "4-5": 3, "5-6": 4 };
@@ -27,6 +28,7 @@ export default function ActivityBuilder() {
   const pickedSounds = isPairs ? [] : pick(soundsIn(slug));
   const names = isPairs ? pickedPairs.map((p) => p.title) : pickedSounds.map((s) => s.name);
   const hinh = PICTURES[age];
+  // New key → the plan's title / steps remount and play their entrance again.
   const game = isPairs ? "/on-tap/phan-biet-am-thanh/" : `/on-tap/nghe-chon-hinh/?nhom=${slug}&hinh=${hinh}`;
 
   const steps: [string, React.ReactNode][] = [
@@ -74,29 +76,34 @@ export default function ActivityBuilder() {
 
   return (
     <div className="grid gap-4 lg:grid-cols-[minmax(0,20rem)_1fr]">
-      <div className="flex flex-col gap-4 rounded-card bg-white p-4 shadow-sm no-print">
+      <div className="reveal flex flex-col gap-4 rounded-card bg-white p-4 shadow-sm no-print">
         <ChipGroup legend="Nhóm âm thanh" name="tao-nhom" value={slug} onChange={(v) => (setSlug(v), setOffset(0))} options={groups.map((x) => [x.slug, x.caption] as [string, string])} />
         <ChipGroup legend="Độ tuổi" name="tao-tuoi" value={age} onChange={setAge} options={AGES.map((a) => [a, `${a} tuổi`] as [string, string])} />
         <button
           type="button"
           onClick={() => setOffset((o) => o + n)}
-          className="inline-flex min-h-11 w-fit items-center gap-2 rounded-full border-2 border-[#7a4fc4] px-4 font-bold text-[#5e3a9e] active:scale-95"
+          onPointerDown={ripple}
+          className="ripple-host inline-flex min-h-11 w-fit items-center gap-2 rounded-full border-2 border-[#7a4fc4] px-4 font-bold text-[#5e3a9e] transition-[scale,background-color] duration-200 ease-bounce hover:bg-[#faf7ff] active:scale-95"
         >
-          <Icon name="replay" className="size-5" /> Đổi âm thanh khác
+          {/* Spins once per click (remounts on each new offset). */}
+          <span key={offset} className={`inline-flex ${offset ? "animate-chrome-spin" : ""}`}>
+            <Icon name="replay" className="size-5" />
+          </span>
+          Đổi âm thanh khác
         </button>
       </div>
 
       <article className="rounded-card border-2 border-[#f4edfd] bg-white p-5 shadow-sm" aria-live="polite">
         <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
+          <div className="animate-slide-in-left [animation-duration:.45s]">
             <p className="text-sm font-semibold uppercase tracking-wide text-[#7a4fc4]">Hoạt động 10–15 phút · {age} tuổi</p>
             <h3 className="font-sans text-2xl font-bold text-navy">Bé khám phá: {g.caption.toLowerCase()}</h3>
           </div>
           <PrintButton />
         </div>
-        <ol className="mt-4 space-y-3">
-          {steps.map(([t, d]) => (
-            <li key={t} className="rounded-2xl border-l-4 border-[#7a4fc4] bg-[#faf7ff] p-3">
+        <ol className="mt-4 space-y-3" style={{ "--stagger": "50ms" } as React.CSSProperties}>
+          {steps.map(([t, d], i) => (
+            <li key={t} className="animate-fade-up rounded-2xl border-l-4 border-[#7a4fc4] bg-[#faf7ff] p-3 [animation-duration:.45s]" style={{ "--i": i } as React.CSSProperties}>
               <p className="font-bold text-ink">{t}</p>
               <div className="text-ink">{d}</div>
             </li>

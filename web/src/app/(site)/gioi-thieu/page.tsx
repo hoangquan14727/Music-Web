@@ -20,7 +20,7 @@ const REFERENCES = [
 
 function H2({ id, children }: { id: string; children: React.ReactNode }) {
   return (
-    <h2 id={id} className="scroll-mt-24 text-2xl font-bold text-navy">
+    <h2 id={id} className="reveal-left scroll-mt-24 text-2xl font-bold text-navy">
       {children}
     </h2>
   );
@@ -41,7 +41,10 @@ export default function AboutPage() {
     <div className="mx-auto max-w-4xl space-y-10 px-4 py-8">
       <header>
         <h1 className="text-3xl font-bold text-navy md:text-4xl">Giới thiệu dự án</h1>
-        <blockquote className="mt-4 rounded-card border-l-4 border-pink bg-pink-soft p-5 text-lg text-ink">
+        <blockquote className="relative mt-4 animate-rise-in rounded-card border-l-4 border-pink bg-pink-soft p-5 text-lg text-ink [--i:1]">
+          <span aria-hidden className="pointer-events-none absolute -top-5 right-4 animate-float select-none font-display text-6xl font-extrabold leading-none text-pink/30 [--float-y:-6px] [animation-duration:5s]">
+            “
+          </span>
           “Một môi trường học tập tương tác giúp trẻ khám phá thế giới thông qua âm thanh; đồng thời cung cấp học liệu để giáo viên và sinh viên GDMN sử dụng
           trong hoạt động giáo dục.”
         </blockquote>
@@ -54,37 +57,37 @@ export default function AboutPage() {
 
       <section aria-labelledby="nhom" className="space-y-2">
         <H2 id="nhom">Nhóm thực hiện</H2>
-        <p className="rounded-2xl border-2 border-dashed border-line bg-white p-4 text-muted">[Tên nhóm, thành viên và đơn vị — nhóm bổ sung]</p>
+        <p className="reveal rounded-2xl border-2 border-dashed border-line bg-white p-4 text-muted">[Tên nhóm, thành viên và đơn vị — nhóm bổ sung]</p>
       </section>
 
       <section aria-labelledby="lien-he" className="space-y-2">
         <H2 id="lien-he">Liên hệ</H2>
-        <p className="rounded-2xl border-2 border-dashed border-line bg-white p-4 text-muted">[Email / số điện thoại liên hệ — nhóm bổ sung]</p>
+        <p className="reveal rounded-2xl border-2 border-dashed border-line bg-white p-4 text-muted">[Email / số điện thoại liên hệ — nhóm bổ sung]</p>
       </section>
 
       <section aria-labelledby="chinh-sach" className="space-y-2">
         <H2 id="chinh-sach">Chính sách bảo mật</H2>
         <ul className="list-disc space-y-1 pl-6 text-ink">
-          <li>Website không có đăng nhập, không có tài khoản cho giáo viên hay trẻ.</li>
-          <li>Không có biểu mẫu nào hỏi tên, tuổi hay thông tin cá nhân của trẻ.</li>
-          <li>Không dùng quảng cáo, không dùng công cụ theo dõi người dùng và không lưu điểm số của trẻ.</li>
-          <li>Không có liên kết tới trang bên ngoài trong các khu vực dành cho trẻ.</li>
+          <li className="reveal">Website không có đăng nhập, không có tài khoản cho giáo viên hay trẻ.</li>
+          <li className="reveal">Không có biểu mẫu nào hỏi tên, tuổi hay thông tin cá nhân của trẻ.</li>
+          <li className="reveal">Không dùng quảng cáo, không dùng công cụ theo dõi người dùng và không lưu điểm số của trẻ.</li>
+          <li className="reveal">Không có liên kết tới trang bên ngoài trong các khu vực dành cho trẻ.</li>
         </ul>
       </section>
 
       <section aria-labelledby="ho-tro" className="space-y-2">
         <H2 id="ho-tro">Hỗ trợ sử dụng</H2>
         <ul className="list-disc space-y-1 pl-6 text-ink">
-          <li>Không nghe thấy tiếng? Kiểm tra âm lượng máy; trên iPhone, gạt công tắc im lặng về chế độ có chuông.</li>
-          <li>Trong trò chơi, cô bấm “Bắt đầu” để máy cho phép phát âm thanh; các câu sau sẽ tự phát.</li>
-          <li>Có thể bật chế độ “Giảm chuyển động” của thiết bị: hiệu ứng sẽ được thay bằng khung màu tĩnh.</li>
-          <li>Khi dùng chung một máy tính bảng cho cả lớp, nên bật Truy cập được hướng dẫn (Guided Access) trên iPad hoặc Ghim màn hình trên Android để trẻ không thoát nhầm.</li>
+          <li className="reveal">Không nghe thấy tiếng? Kiểm tra âm lượng máy; trên iPhone, gạt công tắc im lặng về chế độ có chuông.</li>
+          <li className="reveal">Trong trò chơi, cô bấm “Bắt đầu” để máy cho phép phát âm thanh; các câu sau sẽ tự phát.</li>
+          <li className="reveal">Hiệu ứng chuyển động luôn chạy, kể cả khi máy bật “Giảm chuyển động”. Nếu trẻ hay người lớn dễ chóng mặt vì chuyển động, bấm nút “Tắt hiệu ứng” ở cuối các trang (trong trò chơi: ở màn bắt đầu và màn kết quả): hiệu ứng được thay bằng khung màu tĩnh, trình duyệt sẽ nhớ lựa chọn này.</li>
+          <li className="reveal">Khi dùng chung một máy tính bảng cho cả lớp, nên bật Truy cập được hướng dẫn (Guided Access) trên iPad hoặc Ghim màn hình trên Android để trẻ không thoát nhầm.</li>
         </ul>
       </section>
 
       <section aria-labelledby="nguon" className="space-y-2">
         <H2 id="nguon">Nguồn âm thanh</H2>
-        <p className="text-muted">
+        <p className="reveal text-muted">
           Âm thanh dùng giấy phép mở (CC0, phạm vi công cộng hoặc CC BY) hoặc do nhóm tự tạo. Các bản ghi đã được nhóm cắt đoạn, lọc tạp âm và chuẩn hoá âm
           lượng để dùng trên lớp.
           {pending > 0 && ` Còn ${pending} mục đang chờ nhóm bổ sung file.`}
@@ -138,7 +141,9 @@ export default function AboutPage() {
         <H2 id="tai-lieu">Tài liệu tham khảo</H2>
         <ul className="list-disc space-y-1 pl-6 text-sm text-ink">
           {REFERENCES.map((r) => (
-            <li key={r}>{r}</li>
+            <li key={r} className="reveal">
+              {r}
+            </li>
           ))}
         </ul>
       </section>

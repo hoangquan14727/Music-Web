@@ -21,6 +21,8 @@ npx serve out    # xem bản build
 
 Đưa thư mục `web/out/` lên bất kỳ host tĩnh nào (Vercel, Netlify, GitHub Pages ở tên miền gốc).
 
+**Vercel:** Add New → Project → chọn repo này → ở mục **Root Directory** chọn `web` (Framework Preset: Next.js, các lệnh build để mặc định) → Deploy. Sau đó mỗi lần push lên nhánh `main`, Vercel tự build và cập nhật web.
+
 ## Cấu trúc thư mục
 
 | Thư mục | Nội dung |

@@ -15,7 +15,14 @@ const SECTIONS = [
 export default function MusicPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
-      <h1 className="text-3xl font-bold text-navy md:text-4xl">Thư viện nhạc</h1>
+      <div className="flex items-center gap-3">
+        <h1 className="text-3xl font-bold text-navy md:text-4xl">Thư viện nhạc</h1>
+        <span aria-hidden className="pointer-events-none flex gap-1 font-display text-2xl font-bold">
+          <span className="animate-float text-pink [--float-y:-6px]">♪</span>
+          <span className="animate-float text-blue [--float-y:-6px] [--i:2]">♫</span>
+          <span className="animate-float text-[#7a4fc4] [--float-y:-6px] [--i:4]">♪</span>
+        </span>
+      </div>
       <p className="mb-8 mt-2 max-w-3xl text-lg text-ink">
         Âm nhạc và âm thanh nền để cô sử dụng trong các hoạt động trên lớp. Mỗi bản nhạc ghi rõ hoạt động phù hợp và nguồn, giấy phép sử dụng.
       </p>
@@ -24,14 +31,19 @@ export default function MusicPage() {
           const tracks = music.filter((t) => t.category === s.key);
           return (
             <section key={s.key} aria-labelledby={s.key}>
-              <h2 id={s.key} className="text-2xl font-bold text-blue">
+              <h2 id={s.key} className="reveal-left text-2xl font-bold text-blue">
                 {s.title}
               </h2>
-              <p className="mb-3 text-muted">{s.note}</p>
+              <p className="reveal mb-3 text-muted">{s.note}</p>
               {tracks.length ? (
                 <MusicList tracks={tracks} />
               ) : (
-                <p className="rounded-2xl border-2 border-dashed border-line bg-white p-4 text-muted">Chưa có bản nhạc — nhóm nội dung sẽ bổ sung.</p>
+                <p className="reveal-zoom flex items-center gap-2 rounded-2xl border-2 border-dashed border-line bg-white p-4 text-muted">
+                  <span aria-hidden className="animate-sway font-display text-2xl text-blue">
+                    ♫
+                  </span>
+                  Chưa có bản nhạc — nhóm nội dung sẽ bổ sung.
+                </p>
               )}
             </section>
           );

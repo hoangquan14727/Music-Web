@@ -1,0 +1,287 @@
+/* Loading states: first-visit intro, game loader, top navigation bar and the
+   lazy-image skeleton. Imported last from globals.css. The intro timings pair
+   with the <head> script in app/layout.tsx. */
+
+@layer components {
+  /* ---- Brand badge + slim bar (components/Loader.tsx) ---- */
+  .load {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    width: 100%;
+    min-height: 100dvh;
+    padding-inline: 1rem;
+    text-align: center;
+    background: linear-gradient(160deg, #eaf6fd, #fbfcfe 55%, #fdeef4);
+  }
+  .load-badge {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 7rem;
+    aspect-ratio: 1;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow:
+      0 0 0 6px rgb(255 255 255 / 0.6),
+      0 12px 32px -8px rgb(47 111 176 / 0.3),
+      0 0 64px 8px rgb(214 51 108 / 0.1);
+    animation: load-badge-in 0.7s cubic-bezier(0.34, 1.35, 0.64, 1) both;
+  }
+  .load-logo {
+    position: relative;
+    width: 78%;
+    height: auto;
+  }
+  /* Sound waves leaving the badge, 0.8 s apart. */
+  .load-ring {
+    position: absolute;
+    inset: 0;
+    border: 1.5px solid rgb(47 111 176 / 0.45);
+    border-radius: 50%;
+    opacity: 0;
+    pointer-events: none;
+    animation: load-ring 2.4s cubic-bezier(0.2, 0.6, 0.35, 1) calc(0.4s + var(--i) * 0.8s) infinite;
+  }
+  .load-ring:nth-child(2) {
+    border-color: rgb(214 51 108 / 0.4);
+  }
+  .load-bar {
+    display: block;
+    width: 180px;
+    height: 4px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: rgb(47 111 176 / 0.12);
+  }
+  .load-fill {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--color-blue), var(--color-pink));
+    transform-origin: left;
+    transform: scaleX(var(--p, 0.1));
+  }
+  /* Indeterminate: a segment sweeps across (static and centred with effects off). */
+  .load-run {
+    width: 40%;
+    transform: translateX(75%);
+    animation: load-run 1.3s cubic-bezier(0.45, 0, 0.55, 1) infinite;
+  }
+
+  /* ---- First-visit intro (Intro in components/Loader.tsx) ----
+     Hidden unless the head script opts in (html.intro-js). It sets --p from real
+     loading steps and adds .intro-out: the content fades while the panel lifts
+     like a curtain (it keeps catching taps until gone). intro-up-late lifts it
+     anyway if the script stalls. Taller than the screen so its rounded bottom
+     edge only shows while it lifts. */
+  .intro {
+    display: none;
+    position: fixed;
+    inset: 0 0 -3rem;
+    z-index: 100;
+    place-items: center;
+    padding: 0 1rem 3rem;
+    background: linear-gradient(160deg, #eaf6fd, #fbfcfe 55%, #fdeef4);
+    border-radius: 0 0 50% 50% / 0 0 3rem 3rem;
+    box-shadow: 0 1.25rem 2.5rem -0.75rem rgb(48 91 126 / 0.3);
+  }
+  :root.intro-js .intro {
+    display: grid;
+    animation: intro-up-late 0.55s cubic-bezier(0.65, 0, 0.35, 1) 4s both;
+  }
+  .intro-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .intro .load-badge {
+    width: clamp(6.5rem, 24vw, 8rem);
+    margin-bottom: 1.75rem;
+  }
+  .intro-word {
+    font-family: var(--font-display);
+    font-size: clamp(2.1rem, 8vw, 2.9rem);
+    font-weight: 800;
+    line-height: 1.15;
+  }
+  /* Each word rises out of its own clip box (room on top for Vietnamese marks). */
+  .intro-mask {
+    display: inline-block;
+    overflow: hidden;
+    padding: 0.15em 0.04em 0;
+    vertical-align: top;
+  }
+  .intro-rise {
+    display: inline-block;
+    animation: intro-rise 0.65s cubic-bezier(0.2, 0.8, 0.2, 1) calc(0.2s + var(--i) * 120ms) both;
+  }
+  .intro-tag {
+    margin-top: 0.4rem;
+    font-size: clamp(0.68rem, 2.6vw, 0.8rem);
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+    animation: intro-tag-in 0.5s var(--ease-soft) 0.45s both;
+  }
+  .intro .load-bar {
+    margin-top: 2rem;
+    animation: fade-in 0.4s ease 0.3s both;
+  }
+  .intro .load-fill {
+    transition: transform 0.35s var(--ease-soft);
+  }
+  /* The wordmark waits for Baloo 2 (no font swap mid-rise). */
+  :root.intro-js:not(.intro-font) :is(.intro-rise, .intro-tag) {
+    animation-play-state: paused;
+  }
+  /* The lift starts while the content is still fading: one continuous reveal. */
+  :root.intro-js .intro.intro-out {
+    animation: intro-up 0.55s cubic-bezier(0.65, 0, 0.35, 1) 0.06s both;
+  }
+  :root .intro-out .intro-body {
+    animation: intro-body-out 0.18s ease-in both;
+  }
+
+  /* ---- Lazy content images: soft pulsing skeleton, short fade-in once loaded.
+     The head script adds html.img-fx and marks each load/error with data-loaded
+     ("in" for 450 ms, then ""), so those <img> need suppressHydrationWarning
+     (the mark can land before hydration). Decorative (aria-hidden) and eager
+     images are left alone; utilities with their own animation/background win. ---- */
+  :root.img-fx:not([data-motion="off"]) img[loading="lazy"]:not([data-loaded], [aria-hidden], [aria-hidden] *) {
+    border-radius: 0.75rem;
+    background: linear-gradient(110deg, #e8f3fc, #fcecf2);
+    animation: img-wait 1.6s ease-in-out infinite;
+  }
+  :root.img-fx img[data-loaded="in"] {
+    animation: img-in 0.4s var(--ease-soft);
+  }
+}
+
+/* While the intro shows, the page's own animations wait (first frame held),
+   then start as the curtain lifts. Unlayered + important: beats animate-*. */
+:root.intro-on body :not(.intro, .intro *),
+:root.intro-on body :not(.intro, .intro *)::before,
+:root.intro-on body :not(.intro, .intro *)::after {
+  animation-play-state: paused !important;
+}
+
+/* ---- Top navigation progress bar (components/NavPending.tsx) ----
+   loading: trickles to 90 % over 10 s (fast first, then slow; hidden for the
+   first 100 ms so instant navigations show nothing); done: fills and fades. */
+.nav-bar {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 60;
+  height: 3px;
+  background: linear-gradient(90deg, var(--color-blue), var(--color-pink));
+  box-shadow:
+    0 0 10px rgb(214 51 108 / 0.45),
+    0 0 4px rgb(47 111 176 / 0.4);
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left;
+  pointer-events: none;
+  view-transition-name: nav-progress;
+}
+.nav-bar[data-state="loading"] {
+  opacity: 1;
+  transform: scaleX(0.9);
+  transition:
+    transform 10s cubic-bezier(0.05, 0.7, 0.1, 1) 0.1s,
+    opacity 0.2s 0.1s;
+  /* Each run is a fresh element (keyed in NavPending): always grow from 0. */
+  @starting-style {
+    opacity: 0;
+    transform: scaleX(0);
+  }
+}
+.nav-bar[data-state="done"] {
+  transform: scaleX(1);
+  transition:
+    transform 0.3s var(--ease-soft),
+    opacity 0.4s ease 0.3s;
+}
+/* Stays live above the header snapshot during page view transitions. */
+::view-transition-group(nav-progress) {
+  z-index: 101;
+  animation: none;
+}
+::view-transition-old(nav-progress) {
+  display: none;
+}
+::view-transition-new(nav-progress) {
+  animation: none;
+}
+
+@keyframes load-badge-in {
+  from {
+    opacity: 0;
+    transform: scale(0.85);
+  }
+}
+@keyframes load-ring {
+  0% {
+    opacity: 0;
+    transform: scale(1);
+  }
+  15% {
+    opacity: 0.6;
+  }
+  100% {
+    opacity: 0;
+    transform: scale(2.1);
+  }
+}
+@keyframes load-run {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}
+@keyframes intro-rise {
+  from {
+    transform: translateY(115%);
+  }
+}
+@keyframes intro-tag-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@keyframes intro-body-out {
+  to {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+}
+@keyframes intro-up {
+  to {
+    transform: translateY(-100%);
+    visibility: hidden;
+  }
+}
+/* Same curtain under another name, so .intro-out starts a fresh intro-up. */
+@keyframes intro-up-late {
+  to {
+    transform: translateY(-100%);
+    visibility: hidden;
+  }
+}
+@keyframes img-wait {
+  50% {
+    opacity: 0.5;
+  }
+}
+@keyframes img-in {
+  from {
+    opacity: 0;
+  }
+}

@@ -73,6 +73,29 @@ Có thể đưa `web/out/` lên bất kỳ host tĩnh nào (Vercel, Netlify, Git
 - **Dung lượng:** ảnh xuất ra khoảng gấp đôi cỡ hiển thị. Tai nghe và bé gái ở banner có thêm bản nhỏ cho điện thoại (`variants` trong `image-prompts.mjs`). Favicon `web/src/app/icon.png` (192 px) được tạo lại từ logo mỗi lần chạy `process-images.mjs`.
 - **Icon nhỏ ở menu và nút bấm:** bộ icon vector riêng (`web/src/components/Icon.tsx`), không dùng thư viện icon có sẵn. Đã gỡ Lucide và bỏ hết emoji.
 
+## 3b. Hiệu ứng chuyển động
+
+Toàn bộ hiệu ứng làm bằng CSS và một ít React, không thêm thư viện. Dùng chung trong `web/src/app/globals.css`, riêng từng khu trong `web/src/app/motion/*.css`.
+- **Màn chào khi mở web:** logo trong huy hiệu tròn với các vòng sóng âm lan ra, chữ “Thế giới Âm thanh” trồi lên, thanh tiến trình chạy theo tiến độ tải thật (trang, phông chữ, ảnh banner). Hiện ít nhất khoảng 1 giây, lâu nhất khoảng 2,4 giây, rồi kéo lên như tấm rèm; hiệu ứng của trang (banner…) bắt đầu đúng lúc rèm kéo lên.
+  - Chỉ hiện ở lần đầu mở web trong mỗi tab. Muốn xem lại: mở tab mới rồi gõ địa chỉ web (tab mở từ link bên trong web, tab mở ở chế độ nền, hay trình duyệt chặn bộ nhớ thì không hiện).
+  - Chạm, bấm phím hoặc cuộn chuột để bỏ qua; cú chạm đó không bấm nhầm vào nút bên dưới.
+  - Trình duyệt tắt JavaScript: không có màn chào.
+  - Code: `Intro` trong `web/src/components/Loader.tsx`, script đầu trang trong `web/src/app/layout.tsx`, `web/src/app/motion/loading.css`.
+- **Thanh tải trang:** bấm sang trang khác thì một thanh mảnh xanh–hồng chạy ở mép trên màn hình, đầy rồi mờ đi khi trang mới hiện; chuyển trang nhanh thì không hiện. Màn chờ vào trò chơi (khi mạng chậm) dùng cùng kiểu logo và thanh mảnh.
+- **Ảnh đang tải:** ảnh nội dung phía dưới trang (thẻ chủ đề, thẻ âm thanh…) hiện khung màu nhạt nhấp nháy nhẹ trong lúc tải, tải xong thì hiện dần. Ảnh banner và hình trang trí không đổi.
+- **Chuyển trang:** trang cũ mờ đi, trang mới trồi lên (React `<ViewTransition>`); header và trình phát nhạc đứng yên.
+- **Xuất hiện:** banner (bóng thoại, tiêu đề, các lớp hình), thẻ chủ đề và thẻ âm thanh lần lượt hiện; các khối hiện dần khi cuộn tới.
+- **Biến mất:** menu điện thoại, trình phát nhạc khi bấm ✕, câu hỏi cũ trượt ra khi sang câu mới, các lựa chọn sai thu nhỏ khi trẻ chọn đúng.
+- **Lặp lại (chỉ trên hình trang trí):** mặt trời có tia sáng quay chậm, tai nghe bay lơ lửng, nốt nhạc bay lên, mây trôi, sóng âm quanh thẻ đang phát, mascot nhún nhảy.
+- **Phản hồi trong trò chơi:** đúng → thẻ nảy, dấu tích, sao bung ra; sai → chỉ lắc nhẹ như cũ; màn kết quả có 3 ngôi sao và pháo giấy.
+- **Bật/tắt:** hiệu ứng chạy cả khi máy bật “Giảm chuyển động” (nhiều máy Windows tắt sẵn “Animation effects”). Nút **“Tắt hiệu ứng”** ở footer các trang, ở màn bắt đầu/kết quả của trò chơi và ở trang 404 tắt hết hiệu ứng (không đặt giữa lượt chơi để trẻ khỏi bấm nhầm); lựa chọn lưu trên trình duyệt đó (`localStorage`, khoá `tgat-motion`), áp dụng cả trong trò chơi. Code: `web/src/lib/motion.ts`, `web/src/components/MotionToggle.tsx`.
+- **Nguyên tắc đã kiểm tra:**
+  - không nhấp nháy quá 3 lần/giây, vòng lặp chậm (≥ 1,5 giây);
+  - nút bấm không tự chạy lung tung;
+  - bấm “Tắt hiệu ứng” thì tắt hết hiệu ứng (kể cả màn chào và thanh tải trang), mọi nội dung vẫn hiện đủ;
+  - bản in không có hiệu ứng;
+  - dùng bàn phím: Esc đóng menu điện thoại.
+
 ## 4. Âm thanh
 
 - 33/33 âm thanh + 3 bản nhạc là file thật, lấy từ Wikimedia Commons và BigSoundBank.
@@ -104,7 +127,7 @@ Có thể đưa `web/out/` lên bất kỳ host tĩnh nào (Vercel, Netlify, Git
   - Bài trộn không lặp âm.
   - Tìm kiếm: không dấu, bỏ từ đệm, mọi từ phải khớp trong cùng một trường (“động vật” không ra “đồng hồ”), gõ có dấu thì phân biệt “chó” với “chợ”; bỏ dấu kiểu cũ hay kiểu mới (“khoá”/“khóa”) đều được.
 - **Dữ liệu (`npm run check-data`, chạy tự động trước build):** file tồn tại, id không trùng, nguồn/giấy phép đủ, `dimension`/`answer` của cặp so sánh hợp lệ, cặp to–nhỏ chênh ≥ 8 dB.
-- **Trình duyệt thật (Playwright): chơi hết cả 5 trò chơi.** Kịch bản: `web/tests/e2e-games.mcp.js` (chạy bằng công cụ Playwright MCP, hướng dẫn ở đầu file). Kết quả lần chạy cuối: Nghe – chọn hình 5/6, Đoán 6/6 (4 hình), Nối 8/9.
+- **Trình duyệt thật (Playwright): chơi hết cả 5 trò chơi.** Kịch bản: `web/tests/e2e-games.mcp.js` (chạy bằng công cụ Playwright MCP, hướng dẫn ở đầu file). Kết quả lần chạy cuối (sau khi thêm hiệu ứng): Nghe – chọn hình 5/6, Đoán 6/6 (4 hình), Nối 8/9. Câu hỏi đổi trong hiệu ứng chuyển cảnh, nên kịch bản chờ câu cũ rời khỏi trang rồi mới đọc câu mới.
   - Chọn sai không tính điểm; bấm nhiều lần không tính 2 lần.
   - Đoán ở mức 5–6 tuổi hiện đúng 4 hình.
   - Nối: chạm hình trước khi chạm loa thì có nhắc.
@@ -135,19 +158,20 @@ Có thể đưa `web/out/` lên bất kỳ host tĩnh nào (Vercel, Netlify, Git
    Mỗi lượt khoảng 3–7 phút, theo PDF §3.
 7. Mọi nội dung sư phạm do AI viết (gợi ý hoạt động, giáo án, câu hỏi) đều gắn nhãn “Nội dung mẫu – cần nhóm GDMN duyệt”.
 8. Tagline dự phòng: “Bé cùng khám phá thế giới qua âm thanh!” (PDF) và “Lắng nghe – Khám phá – Học mà chơi” (brief).
+9. Hiệu ứng **không theo** cài đặt “Giảm chuyển động” của máy (nhóm yêu cầu: máy trường thường tắt sẵn nên không thấy hiệu ứng nào). Thay bằng nút “Tắt hiệu ứng” (footer, màn bắt đầu/kết quả trò chơi, trang 404), nên vẫn đạt WCAG 2.2.2 (dừng/tạm dừng nội dung chuyển động).
 
 ## 7. Lighthouse và công cụ
 
-**Lighthouse (mobile), đo lại 24/09/2026 sau khi đổi sang ảnh AI** (bản build tĩnh; trang chủ và trang chủ đề lấy trung vị của 3 lần đo).
+**Lighthouse (mobile), đo lại 24/09/2026 sau khi thêm hiệu ứng** (bản build tĩnh; trang chủ và Thư viện nhạc lấy trung vị của 3 lần đo; số trong ngoặc là trước khi thêm hiệu ứng).
 
 | Trang | Performance | Accessibility | Best Practices | SEO |
 |---|---|---|---|---|
-| `/` | 88 | 100 | 100 | 100 |
-| `/chu-de/tu-nhien` | 88 | 100 | 100 | 100 |
-| `/on-tap` | 90 | 100 | 100 | 100 |
-| `/on-tap/noi-am-thanh-hinh-anh` | 92 | 100 | 100 | 100 |
-| `/thu-vien-nhac` | 92 | 100 | 100 | 100 |
-| `/goc-giao-vien` | 93 | 100 | 100 | 100 |
+| `/` | 87 (88) | 100 | 100 | 100 |
+| `/chu-de/tu-nhien` | 88 (88) | 100 | 100 | 100 |
+| `/on-tap` | 90 (90) | 100 | 100 | 100 |
+| `/on-tap/noi-am-thanh-hinh-anh` | 92 (92) | 100 | 100 | 100 |
+| `/thu-vien-nhac` | 89 (92) | 100 | 100 | 100 |
+| `/goc-giao-vien` | 93 (93) | 100 | 100 | 100 |
 
 - Lần đo đầu sau khi có ảnh AI: trang chủ chỉ đạt 76 (LCP mô phỏng 7,4 giây, tải 1,5 MB). Đã sửa:
   - xuất lại ảnh chủ đề, CTA và ảnh nổi bật đúng cỡ hiển thị;
@@ -156,6 +180,7 @@ Có thể đưa `web/out/` lên bất kỳ host tĩnh nào (Vercel, Netlify, Git
   - tải chậm (lazy) các lớp trang trí của banner và hình dán;
   - bỏ việc tải trước ảnh của trang 404.
   Sau khi sửa, trang chủ tải 962 KB.
+- Hiệu ứng làm file CSS chặn hiển thị tăng từ khoảng 10 KB lên 16 KB, nên điểm giảm 0–3. CLS vẫn bằng 0 và phần tử LCP không có hiệu ứng mờ dần.
 - Performance vẫn thấp hơn bản SVG cũ (92–94) vì nay là ảnh vẽ thật. Phần còn lại chủ yếu là 2 font có chữ tiếng Việt (khoảng 150 KB). LCP đo thực trên máy chỉ khoảng 0,2 giây.
 
 - **Công cụ đã dùng:**

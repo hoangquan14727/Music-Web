@@ -1,0 +1,221 @@
+/* Site chrome effects (header, footer, menu, mini player). Imported last from globals.css. */
+
+@theme inline {
+  --animate-chrome-bounce: chrome-bounce 0.6s ease-out;
+  --animate-chrome-pop: chrome-pop 0.4s var(--ease-bounce);
+  --animate-chrome-spin: chrome-spin 0.7s var(--ease-soft);
+}
+
+/* ---- Header ---- */
+
+/* Soft shade under the sticky bar, fading in over the first 96 px of scroll (no JS). */
+@supports (animation-timeline: scroll()) {
+  .chrome-header::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: 100%;
+    z-index: -1;
+    height: 14px;
+    background: linear-gradient(rgb(48 91 126 / 0.14), transparent);
+    opacity: 0;
+    pointer-events: none;
+    animation: chrome-shade linear both;
+    animation-timeline: scroll(root);
+    animation-range: 0px 96px;
+  }
+}
+
+/* Mascot wiggles when its link is hovered/focused. */
+.chrome-logo img {
+  transform-origin: 50% 85%;
+}
+.chrome-logo:is(:hover, :focus-visible) img {
+  animation: chrome-wiggle 0.8s ease-in-out;
+}
+
+/* Icons hop once per hover/focus (the link itself stays put). */
+.chrome-hop:is(:hover, :focus-visible) svg {
+  animation: chrome-bounce 0.6s ease-out;
+}
+
+/* Nav underline: grows from the centre on the current page, peeks on hover. */
+.chrome-navlink {
+  position: relative;
+}
+.chrome-navlink::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0.35rem;
+  bottom: -3px;
+  height: 3px;
+  border-radius: 3px;
+  background: var(--color-pink);
+  opacity: 0.45;
+  transform: scaleX(0);
+  pointer-events: none;
+  transition:
+    transform 0.4s var(--ease-bounce),
+    opacity 0.2s;
+}
+.chrome-navlink:hover::after {
+  transform: scaleX(0.4);
+}
+.chrome-navlink[aria-current="page"]::after {
+  opacity: 1;
+  transform: scaleX(1);
+}
+
+/* Hamburger folds into an × (viewBox units, centre 12,12). */
+.chrome-burger path {
+  transform-box: view-box;
+  transform-origin: 12px 12px;
+  transition:
+    transform 0.4s var(--ease-bounce),
+    opacity 0.2s;
+}
+.chrome-burger[aria-expanded="true"] path:nth-child(1) {
+  transform: rotate(45deg) translateY(5.5px);
+}
+.chrome-burger[aria-expanded="true"] path:nth-child(2) {
+  opacity: 0;
+  transform: scaleX(0.2);
+}
+.chrome-burger[aria-expanded="true"] path:nth-child(3) {
+  transform: rotate(-45deg) translateY(-5.5px);
+}
+
+/* Mobile menu: slides down in, slides up out (NavHeader keeps it 200 ms). */
+.chrome-menu-in {
+  animation: chrome-menu-in 0.32s var(--ease-soft) both;
+}
+.chrome-menu-out {
+  animation: chrome-menu-out 0.2s var(--ease-exit) both;
+}
+
+/* ---- Footer ---- */
+
+/* Wave strip: two layers sliding at different speeds. */
+.chrome-wave {
+  animation: chrome-wave 32s linear infinite;
+}
+.chrome-wave-back {
+  animation-duration: 48s;
+  animation-direction: reverse;
+}
+
+/* Underline slides in from the left, out to the right. */
+.chrome-uline {
+  position: relative;
+}
+.chrome-uline::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0.3rem;
+  height: 2px;
+  border-radius: 2px;
+  background: currentColor;
+  transform: scaleX(0);
+  transform-origin: right;
+  pointer-events: none;
+  transition: transform 0.3s var(--ease-soft);
+}
+.chrome-uline:is(:hover, :focus-visible)::after {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+/* ---- Small bits ---- */
+
+/* One light sweep across a badge shortly after it renders. */
+.chrome-shimmer {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+}
+.chrome-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 30%, rgb(255 255 255 / 0.85) 50%, transparent 70%);
+  transform: translateX(-110%);
+  pointer-events: none;
+  animation: chrome-shimmer 1.3s var(--ease-soft) 0.9s both;
+}
+
+/* Suggestion cards filtered in/out (TeacherSuggestions, React <ViewTransition>). */
+::view-transition-new(.chrome-card-in) {
+  animation: fade-up 400ms var(--ease-soft) 60ms both;
+}
+
+@keyframes chrome-shade {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes chrome-wiggle {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  20% {
+    transform: rotate(-9deg);
+  }
+  45% {
+    transform: rotate(7deg);
+  }
+  70% {
+    transform: rotate(-4deg);
+  }
+  85% {
+    transform: rotate(2deg);
+  }
+}
+@keyframes chrome-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-5px) scale(1.08);
+  }
+  55% {
+    transform: translateY(0) scale(1.06, 0.94);
+  }
+  75% {
+    transform: translateY(-2px);
+  }
+}
+@keyframes chrome-pop {
+  40% {
+    transform: scale(1.12);
+  }
+}
+@keyframes chrome-spin {
+  to {
+    transform: rotate(-360deg);
+  }
+}
+@keyframes chrome-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+}
+@keyframes chrome-menu-out {
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+@keyframes chrome-wave {
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes chrome-shimmer {
+  to {
+    transform: translateX(110%);
+  }
+}

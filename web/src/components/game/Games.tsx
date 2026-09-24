@@ -57,14 +57,16 @@ export function GuessGame() {
       render={(q, onDone) => <ChooseQuestion question={q} onDone={onDone} />}
       followUp={GENERIC_FOLLOW_UP}
       renderStart={(start) => (
-        <div className="flex flex-wrap justify-center gap-3" role="group" aria-label="Chọn độ tuổi">
-          {LEVELS.map((l) => (
+        // Level buttons pop in one after another (tighter stagger so the last one is ready by ~0.7 s).
+        <div className="flex flex-wrap justify-center gap-3 [--stagger:50ms]" role="group" aria-label="Chọn độ tuổi">
+          {LEVELS.map((l, i) => (
             <button
               key={l.choices}
               type="button"
               data-kid-target
               onClick={() => start(l.choices)}
-              className="flex min-h-20 min-w-40 flex-col items-center justify-center rounded-3xl bg-[var(--g-ink)] px-6 py-2 font-display text-white shadow-lg active:scale-95"
+              className="flex min-h-20 min-w-40 animate-pop-in flex-col items-center justify-center rounded-3xl bg-[var(--g-ink)] px-6 py-2 font-display text-white shadow-lg transition-transform duration-300 ease-bounce hover:-translate-y-1 active:scale-95"
+              style={{ "--i": i + 3 } as React.CSSProperties}
             >
               <span className="text-2xl font-bold">{l.label}</span>
               <span className="text-base opacity-90">{l.hint}</span>

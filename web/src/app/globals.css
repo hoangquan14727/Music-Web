@@ -125,11 +125,592 @@ footer :focus-visible {
   animation: pop 0.25s ease-out both;
 }
 
-/* Reduced motion is honoured everywhere, kids' area included: moving cues are
-   replaced by a static highlight (bars full height + ring on the card). */
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
+/* ===================== Motion system =====================
+   Bouncy, soft, calm. Loops are slow (≥ 1.5 s) and small. Hidden "from"
+   states live only inside keyframes (fill both), so with effects off
+   (animation: none) everything is simply visible and still. */
+
+/* Stagger index. Set it on the SAME element as the animate-* class:
+   style={{ "--i": n } as React.CSSProperties}. Not inherited. */
+@property --i {
+  syntax: "<integer>";
+  inherits: false;
+  initial-value: 0;
+}
+
+@theme static {
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-soft: cubic-bezier(0.22, 0.8, 0.36, 1);
+  --ease-exit: cubic-bezier(0.5, 0, 0.75, 0);
+  --dur-fast: 150ms;
+  --dur-base: 300ms;
+  --dur-slow: 550ms;
+  --stagger: 70ms; /* delay step per --i */
+}
+
+/* inline: --i must resolve on the animated element, not on :root. */
+@theme inline {
+  /* Enter (one-shot, ≤ 0.7 s) */
+  --animate-fade-in: fade-in 0.5s var(--ease-soft) calc(var(--i, 0) * var(--stagger)) both;
+  --animate-fade-up: fade-up 0.55s var(--ease-soft) calc(var(--i, 0) * var(--stagger)) both;
+  --animate-fade-down: fade-down 0.5s var(--ease-soft) calc(var(--i, 0) * var(--stagger)) both;
+  --animate-slide-in-left: slide-in-left 0.55s var(--ease-soft) calc(var(--i, 0) * var(--stagger)) both;
+  --animate-slide-in-right: slide-in-right 0.55s var(--ease-soft) calc(var(--i, 0) * var(--stagger)) both;
+  --animate-pop-in: pop-in 0.45s var(--ease-bounce) calc(var(--i, 0) * var(--stagger)) both;
+  --animate-bounce-in: bounce-in 0.7s ease-out calc(var(--i, 0) * var(--stagger)) both;
+  --animate-rise-in: rise-in 0.6s var(--ease-bounce) calc(var(--i, 0) * var(--stagger)) both;
+  /* Exit (one-shot, stays hidden until unmounted) */
+  --animate-fade-out: fade-out 0.2s var(--ease-exit) both;
+  --animate-pop-out: pop-out 0.24s var(--ease-exit) both;
+  --animate-sink-out: sink-out 0.22s var(--ease-exit) both;
+  /* Feedback (one-shot) */
+  --animate-jelly: jelly 0.6s ease-out;
+  --animate-shake-soft: shake-soft 0.6s ease-in-out;
+  --animate-tada: tada 0.9s ease-in-out;
+  --animate-rise-fade-once: rise-fade 1.4s ease-out calc(var(--i, 0) * var(--stagger)) both;
+  /* Loops: decorative elements only; --i offsets the phase */
+  --animate-float: float 4s ease-in-out calc(var(--i, 0) * -0.7s) infinite;
+  --animate-sway: sway 5s ease-in-out calc(var(--i, 0) * -0.9s) infinite;
+  --animate-spin-slow: spin-slow 24s linear infinite;
+  --animate-twinkle: twinkle 2.4s ease-in-out calc(var(--i, 0) * -0.5s) infinite;
+  --animate-drift: drift 16s ease-in-out calc(var(--i, 0) * -3s) infinite;
+  --animate-breathe: breathe 3.2s ease-in-out calc(var(--i, 0) * -0.6s) infinite;
+  --animate-hop: hop 1.6s ease-in-out calc(var(--i, 0) * -0.4s) infinite;
+  --animate-rise-fade: rise-fade 3.2s ease-out calc(var(--i, 0) * -0.8s) infinite;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+}
+@keyframes fade-down {
+  from {
+    opacity: 0;
+    transform: translateY(-14px);
+  }
+}
+@keyframes slide-in-left {
+  from {
+    opacity: 0;
+    transform: translateX(-28px);
+  }
+}
+@keyframes slide-in-right {
+  from {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+}
+@keyframes pop-in {
+  from {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+}
+@keyframes bounce-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  72% {
+    transform: scale(0.96);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+/* Transform only (no opacity): safe for LCP text such as the hero h1. */
+@keyframes rise-in {
+  from {
+    transform: translateY(16px);
+  }
+}
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+@keyframes pop-out {
+  30% {
+    transform: scale(1.05);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.7);
+  }
+}
+@keyframes sink-out {
+  to {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}
+@keyframes jelly {
+  0%,
+  100% {
+    transform: scale(1, 1);
+  }
+  25% {
+    transform: scale(1.1, 0.9);
+  }
+  45% {
+    transform: scale(0.94, 1.06);
+  }
+  65% {
+    transform: scale(1.03, 0.97);
+  }
+  82% {
+    transform: scale(0.99, 1.01);
+  }
+}
+@keyframes shake-soft {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  50% {
+    transform: translateX(3px);
+  }
+  75% {
+    transform: translateX(-2px);
+  }
+}
+@keyframes tada {
+  0%,
+  100% {
+    transform: scale(1) rotate(0);
+  }
+  15% {
+    transform: scale(0.95) rotate(-2deg);
+  }
+  35% {
+    transform: scale(1.1) rotate(3deg);
+  }
+  55% {
+    transform: scale(1.1) rotate(-3deg);
+  }
+  75% {
+    transform: scale(1.05) rotate(1deg);
+  }
+}
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(var(--float-y, -10px));
+  }
+}
+@keyframes sway {
+  0%,
+  100% {
+    transform: rotate(calc(var(--sway, 4deg) * -1));
+  }
+  50% {
+    transform: rotate(var(--sway, 4deg));
+  }
+}
+@keyframes spin-slow {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.45;
+    transform: scale(0.85);
+  }
+}
+@keyframes drift {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(var(--drift-x, 28px));
+  }
+}
+@keyframes breathe {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(var(--breathe, 1.05));
+  }
+}
+@keyframes hop {
+  0%,
+  75%,
+  100% {
+    transform: translateY(0) scale(1);
+  }
+  12% {
+    transform: translateY(0) scale(1.05, 0.95);
+  }
+  45% {
+    transform: translateY(var(--hop-y, -14px)) scale(0.97, 1.03);
+  }
+  85% {
+    transform: translateY(0) scale(1.03, 0.97);
+  }
+}
+/* Float up and vanish (music notes, bubbles). --rise-x / --rise-y set the path. */
+@keyframes rise-fade {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.7);
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--rise-x, 0px), var(--rise-y, -64px)) scale(1);
+  }
+}
+
+@keyframes ring {
+  from {
+    opacity: 0.7;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(var(--ring-scale, 1.45));
+  }
+}
+@keyframes halo {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+}
+@keyframes shine {
+  0% {
+    transform: translateX(-100%);
+  }
+  30%,
+  100% {
+    transform: translateX(100%);
+  }
+}
+@keyframes ripple {
+  from {
+    opacity: 0.28;
+    transform: scale(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(1);
+  }
+}
+@keyframes burst-fly {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.3);
+  }
+  12% {
+    opacity: 1;
+  }
+  60% {
+    opacity: 1;
+    transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty))) rotate(calc(var(--r) * 0.6)) scale(var(--s));
+  }
+  100% {
+    opacity: 0;
+    transform: translate(calc(-50% + var(--tx)), calc(-50% + var(--ty) + var(--fall))) rotate(var(--r)) scale(var(--s));
+  }
+}
+
+@layer components {
+  /* Two expanding rings while the element (or an ancestor) is .is-playing /
+     .is-listening. Pseudo-elements only: the element's box never changes.
+     Needs no overflow-hidden on the element; set --ring-scale: 1.1 on big cards. */
+  .sound-rings {
+    position: relative;
+  }
+  .sound-rings::before,
+  .sound-rings::after {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    border: 3px solid var(--ring-color, currentColor);
+    border-radius: inherit;
+    opacity: 0;
+    pointer-events: none;
+  }
+  .sound-rings:is(.is-playing, .is-listening, .is-playing *, .is-listening *)::before,
+  .sound-rings:is(.is-playing, .is-listening, .is-playing *, .is-listening *)::after {
+    animation: ring 2s var(--ease-soft) infinite;
+  }
+  .sound-rings:is(.is-playing, .is-listening, .is-playing *, .is-listening *)::after {
+    animation-delay: 1s;
+  }
+
+  /* Breathing glow ring around the primary tap target (the target stays still). */
+  .halo {
+    position: relative;
+  }
+  .halo::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    box-shadow: 0 0 0 var(--halo-size, 10px) var(--halo-color, rgb(214 51 108 / 0.22));
+    pointer-events: none;
+    animation: halo 2.8s ease-in-out infinite;
+  }
+
+  /* Soft light sweep across a big CTA every ~4.5 s. Clips its content. */
+  .shine {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .shine::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 35%, rgb(255 255 255 / 0.45) 50%, transparent 65%);
+    transform: translateX(-100%);
+    pointer-events: none;
+    animation: shine 4.5s ease-in-out 1s infinite;
+  }
+
+  /* Tap ripple: host needs .ripple-host; spans come from ripple() in lib/motion. */
+  .ripple-host {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+  }
+  .ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: var(--ripple-color, currentColor);
+    opacity: 0;
+    pointer-events: none;
+    animation: ripple 0.6s var(--ease-soft) forwards;
+  }
+
+  /* Particles from <Burst>. */
+  .burst {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    pointer-events: none;
+  }
+  .burst > span {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    color: var(--c);
+    font-size: var(--size);
+    line-height: 1;
+    animation: burst-fly 1s cubic-bezier(0.2, 0.7, 0.3, 1) var(--delay) both;
+  }
+  .burst-confetti > span {
+    width: 0.5rem;
+    height: 0.75rem;
+    border-radius: 2px;
+    background: var(--c);
+  }
+
+  /* Scroll reveal (scroll-driven; without support content is just visible).
+     Opacity is full by 40 % of the entry range, so nothing already on screen
+     stays faded. Use on cards/section blocks, not on page-tall wrappers, and
+     not inside an overflow-hidden/auto ancestor (that becomes the timeline). */
+  @supports (animation-timeline: view()) {
+    .reveal,
+    .reveal-zoom,
+    .reveal-left,
+    .reveal-right {
+      animation: reveal-up var(--ease-soft) both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 100%;
+    }
+    .reveal-zoom {
+      animation-name: reveal-zoom;
+    }
+    .reveal-left {
+      animation-name: reveal-left;
+    }
+    .reveal-right {
+      animation-name: reveal-right;
+    }
+  }
+}
+
+@keyframes reveal-up {
+  0% {
+    opacity: 0;
+    transform: translateY(32px);
+  }
+  40% {
+    opacity: 1;
+  }
+}
+@keyframes reveal-zoom {
+  0% {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  40% {
+    opacity: 1;
+  }
+}
+@keyframes reveal-left {
+  0% {
+    opacity: 0;
+    transform: translateX(-40px);
+  }
+  40% {
+    opacity: 1;
+  }
+}
+@keyframes reveal-right {
+  0% {
+    opacity: 0;
+    transform: translateX(40px);
+  }
+  40% {
+    opacity: 1;
+  }
+}
+
+/* ---- View transitions (React <ViewTransition> class names) ---- */
+::view-transition {
+  pointer-events: none;
+}
+/* Pages: quick fade out, softer rise in. */
+::view-transition-old(.vt-page-out) {
+  animation: vt-out 180ms var(--ease-exit) both;
+}
+::view-transition-new(.vt-page-in) {
+  animation: vt-in 380ms var(--ease-soft) 100ms both;
+}
+/* Element-level classes for enter/exit/share props. */
+::view-transition-new(.vt-pop-in) {
+  animation: pop-in 400ms var(--ease-bounce) both;
+}
+::view-transition-old(.vt-pop-out) {
+  animation: pop-out 220ms var(--ease-exit) both;
+}
+::view-transition-new(.vt-fade-in) {
+  animation: fade-in 300ms var(--ease-soft) both;
+}
+::view-transition-old(.vt-fade-out) {
+  animation: fade-out 180ms var(--ease-exit) both;
+}
+::view-transition-new(.vt-slide-in) {
+  animation: slide-in-right 400ms var(--ease-soft) both;
+}
+::view-transition-old(.vt-slide-out) {
+  animation: vt-slide-out 200ms var(--ease-exit) both;
+}
+::view-transition-group(.vt-morph) {
+  animation-duration: 400ms;
+  animation-timing-function: var(--ease-soft);
+}
+@keyframes vt-out {
+  to {
+    opacity: 0;
+    transform: scale(0.985);
+  }
+}
+@keyframes vt-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.99);
+  }
+}
+@keyframes vt-slide-out {
+  to {
+    opacity: 0;
+    transform: translateX(-28px);
+  }
+}
+/* Header and music player stay put; they only fade when the other page has
+   none (entering/leaving a game). Chrome ignores :not(:only-child) here. */
+::view-transition-group(site-header),
+::view-transition-group(mini-player) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-header),
+::view-transition-new(site-header),
+::view-transition-old(mini-player),
+::view-transition-new(mini-player) {
+  animation: none;
+}
+::view-transition-old(site-header):only-child,
+::view-transition-old(mini-player):only-child {
+  animation: fade-out 200ms var(--ease-exit) both;
+}
+::view-transition-new(site-header):only-child,
+::view-transition-new(mini-player):only-child {
+  animation: fade-in 300ms var(--ease-soft) both;
+}
+
+/* Effects off = the footer "Tắt hiệu ứng" setting (data-motion="off" on <html>),
+   deliberately not the OS reduced-motion flag, which many school PCs report.
+   Kids' area included: moving cues become a static highlight (bars full height
+   + ring on the card). */
+:root[data-motion="off"] {
+  scroll-behavior: auto;
+}
+:root[data-motion="off"] *,
+:root[data-motion="off"] *::before,
+:root[data-motion="off"] *::after {
+  animation: none !important;
+  transition: none !important;
+}
+:root[data-motion="off"]::view-transition-group(*),
+:root[data-motion="off"]::view-transition-old(*),
+:root[data-motion="off"]::view-transition-new(*) {
+  animation: none !important;
+}
+:root[data-motion="off"] .is-playing .sound-bars span {
+  transform: scaleY(1);
+}
+:root[data-motion="off"] :is(.intro, .burst, .nav-bar) {
+  display: none !important;
+}
+
+@media print {
+  .no-print,
+  .intro,
+  .burst,
+  .ripple {
+    display: none !important;
+  }
+  body {
+    background: #fff;
   }
   *,
   *::before,
@@ -137,16 +718,11 @@ footer :focus-visible {
     animation: none !important;
     transition: none !important;
   }
-  .is-playing .sound-bars span {
-    transform: scaleY(1);
-  }
 }
 
-@media print {
-  .no-print {
-    display: none !important;
-  }
-  body {
-    background: #fff;
-  }
-}
+/* Area stylesheets (one per area; may hold @keyframes, classes, @theme). */
+@import "./motion/home.css";
+@import "./motion/sounds.css";
+@import "./motion/games.css";
+@import "./motion/chrome.css";
+@import "./motion/loading.css";

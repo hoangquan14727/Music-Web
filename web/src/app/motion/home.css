@@ -1,0 +1,125 @@
+/* Home page effects (hero, sections). Imported last from globals.css. */
+
+@theme inline {
+  /* Gentle bob; tune with --bob-y, --bob-r, --bob-s. */
+  --animate-home-bob: home-bob 5s ease-in-out infinite;
+  /* Arrow nudge inside a hovered link/button (the child moves, not the target). */
+  --animate-home-nudge: home-nudge 1.6s ease-in-out infinite;
+}
+
+@layer components {
+  /* Hero mouse parallax: HeroParallax sets --px/--py (-1..1) on the section,
+     --depth is the travel in px. `translate` stacks with transform animations. */
+  .home-par {
+    translate: calc(var(--px, 0) * var(--depth, 6) * -1px) calc(var(--py, 0) * var(--depth, 6) * -1px);
+    transition: translate 0.6s var(--ease-soft);
+  }
+
+  /* Hero title lines drop in with a squash. Transform only: the h1 is LCP text. */
+  .home-drop {
+    transform-origin: 50% 100%;
+    animation: home-drop 0.75s ease-out calc(var(--i) * 120ms) both;
+  }
+
+  /* Speech bubble grows from its tail with a wobble, then bobs slowly. */
+  .home-bubble {
+    --float-y: -5px;
+    transform-origin: 80% 100%;
+    animation: home-bubble-in 0.7s ease-out 0.1s both; /* no float loop: .home-par moves it, its notes loop */
+  }
+
+  /* Word column: words pop in one by one, then a slow wave runs down the column. */
+  .home-word {
+    animation: pop-in 0.45s var(--ease-bounce) calc(500ms + var(--i) * 120ms) both;
+  }
+  /* Inner span: its own element, so both animations stay on the compositor. */
+  .home-wave {
+    display: inline-block;
+    animation: home-wave 5s ease-in-out calc(1.4s + var(--i) * 300ms) infinite;
+  }
+
+  /* Sun: soft rays turning behind it and a warm glow. */
+  .home-sun-rays {
+    border-radius: 50%;
+    background: repeating-conic-gradient(rgb(255 214 90 / 0.4) 0deg 8deg, transparent 8deg 22.5deg);
+    mask-image: radial-gradient(closest-side, transparent 42%, #000 52%, transparent 100%);
+  }
+  .home-sun-glow {
+    border-radius: 50%;
+    background: radial-gradient(closest-side, rgb(255 230 140 / 0.75), transparent);
+  }
+
+  /* Featured sound: the picture bobs while it plays. */
+  .is-playing .home-art {
+    --bob-y: -4px;
+    --bob-r: -2deg;
+    animation: home-bob 1.8s ease-in-out infinite;
+  }
+
+  /* Staggered scroll reveal: a later --i starts later in the entry range but
+     ends at the same point, so cards already on screen are fully shown. */
+  @supports (animation-timeline: view()) {
+    .home-stagger {
+      animation: reveal-up var(--ease-soft) both;
+      animation-timeline: view();
+      animation-range: entry calc(var(--i) * 6%) entry 100%;
+    }
+    .home-stagger-zoom {
+      animation-name: reveal-zoom;
+    }
+  }
+}
+
+@keyframes home-drop {
+  0% {
+    transform: translateY(-28px) scale(0.94);
+  }
+  55% {
+    transform: translateY(5px) scale(1.03, 0.96);
+  }
+  78% {
+    transform: translateY(-3px) scale(0.99, 1.01);
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes home-bubble-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.4) rotate(-10deg);
+  }
+  55% {
+    opacity: 1;
+    transform: scale(1.06) rotate(5deg);
+  }
+  75% {
+    transform: scale(0.98) rotate(-2deg);
+  }
+  90% {
+    transform: rotate(1deg);
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes home-wave {
+  0%,
+  20%,
+  100% {
+    transform: none;
+  }
+  10% {
+    transform: translateY(-5px) rotate(-3deg);
+  }
+}
+@keyframes home-bob {
+  50% {
+    transform: translateY(var(--bob-y, -4px)) rotate(var(--bob-r, 0deg)) scale(var(--bob-s, 1));
+  }
+}
+@keyframes home-nudge {
+  50% {
+    transform: translateX(5px);
+  }
+}

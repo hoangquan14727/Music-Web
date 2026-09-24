@@ -35,8 +35,8 @@ export default function TeacherPage() {
           Nguyên tắc khi dùng trên lớp
         </h2>
         <dl className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {PRINCIPLES.map(([t, d]) => (
-            <div key={t} className="rounded-2xl bg-white p-4 shadow-sm">
+          {PRINCIPLES.map(([t, d], i) => (
+            <div key={t} className="animate-rise-in rounded-2xl bg-white p-4 shadow-sm" style={{ "--i": i + 1 } as React.CSSProperties}>
               <dt className="font-bold text-ink">{t}</dt>
               <dd className="text-muted">{d}</dd>
             </div>
@@ -45,7 +45,7 @@ export default function TeacherPage() {
       </section>
 
       <section aria-labelledby="goi-y" className="mt-10 no-print">
-        <div className="mb-3 flex flex-wrap items-center gap-3">
+        <div className="reveal-left mb-3 flex flex-wrap items-center gap-3">
           <h2 id="goi-y" className="text-2xl font-bold text-[#7a4fc4]">
             Gợi ý hoạt động
           </h2>
@@ -55,7 +55,7 @@ export default function TeacherPage() {
       </section>
 
       <section aria-labelledby="tao-hoat-dong" className="mt-12">
-        <div className="mb-1 flex flex-wrap items-center gap-3">
+        <div className="reveal-left mb-1 flex flex-wrap items-center gap-3">
           <h2 id="tao-hoat-dong" className="text-2xl font-bold text-[#7a4fc4]">
             Tạo hoạt động
           </h2>

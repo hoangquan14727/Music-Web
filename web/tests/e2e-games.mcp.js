@@ -12,6 +12,12 @@ async (page) => {
     for (let i = 0; i < 40; i++) { const p = await playing(); if (p) return p; await page.waitForTimeout(100); }
     return null;
   };
+  // Questions change inside a view transition: wait until the old one has left the DOM.
+  const next = async () => {
+    const old = await page.locator('[data-option], [data-token], [data-answer]').first().elementHandle().catch(() => null);
+    await page.getByRole('button', { name: /Câu tiếp theo|Xem kết quả/ }).click();
+    if (old) await old.waitForElementState('hidden').catch(() => {});
+  };
   await page.setViewportSize({ width: 1024, height: 768 });
 
   // 1) Nghe – chọn hình: 1 wrong first tap, rest correct -> 5/6
@@ -31,7 +37,7 @@ async (page) => {
     }
     await page.locator(`[data-option="${id}"]`).click();
     await page.locator(`[data-option="${id}"]`).click({ force: true }).catch(() => {});
-    await page.getByRole('button', { name: /Câu tiếp theo|Xem kết quả/ }).click();
+    await next();
   }
   log.push('NCH: ' + (await page.getByRole('heading', { level: 1 }).innerText()));
 
@@ -45,7 +51,7 @@ async (page) => {
     await page.getByTestId('replay').click();
     const id = idOf(await waitPlaying());
     await page.locator(`[data-option="${id}"]`).click();
-    await page.getByRole('button', { name: /Câu tiếp theo|Xem kết quả/ }).click();
+    await next();
   }
   log.push('Đoán: ' + (await page.getByRole('heading', { level: 1 }).innerText()));
 
@@ -72,7 +78,7 @@ async (page) => {
       }
       await page.locator(`[data-image="${t}"]`).click();
     }
-    await page.getByRole('button', { name: /Câu tiếp theo|Xem kết quả/ }).click();
+    await next();
   }
   log.push('Nối: ' + (await page.getByRole('heading', { level: 1 }).innerText()));
 
@@ -89,7 +95,7 @@ async (page) => {
       if (await page.getByText('Giỏi quá!').isVisible().catch(() => false)) break;
       await page.waitForTimeout(3500);
     }
-    await page.getByRole('button', { name: /Câu tiếp theo|Xem kết quả/ }).click();
+    await next();
   }
   log.push('Phân biệt: ' + (await page.getByRole('heading', { level: 1 }).innerText()) + ' | distinct sounds played: ' + seen.size);
 
@@ -119,7 +125,7 @@ async (page) => {
       const id = idOf(await waitPlaying());
       await page.locator(`[data-option="${id}"]`).click();
     }
-    await page.getByRole('button', { name: /Câu tiếp theo|Xem kết quả/ }).click();
+    await next();
   }
   log.push('Ôn tập nhanh kinds: ' + kinds.join(',') + ' | ' + (await page.getByRole('heading', { level: 1 }).innerText()));
   return log.join('\n');

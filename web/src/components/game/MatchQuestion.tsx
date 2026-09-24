@@ -4,10 +4,15 @@ import { useRef, useState } from "react";
 import { play } from "@/lib/audio";
 import type { ItemResult, MatchBoard } from "@/lib/quiz";
 import { sounds, type Sound } from "@/lib/data";
+import { ripple } from "@/lib/motion";
 import SoundArt from "@/components/SoundArt";
+import Icon from "@/components/Icon";
+import Burst from "@/components/Burst";
 import { usePlaying } from "@/components/usePlaying";
 import SoundToken, { Dots, TOKENS } from "./SoundToken";
+import { Say } from "./Fx";
 
+const HINT = "Chạm vào chiếc loa trước nhé!";
 const byId = (id: string) => sounds.find((s) => s.id === id) as Sound;
 // Tap-to-match (more reliable than drag & drop on classroom tablets):
 // tap a sound token (it plays), then tap its picture. Right → locked pair;
@@ -32,7 +37,7 @@ export default function MatchQuestion({ board, onDone }: { board: MatchBoard; on
   function pickImage(id: string) {
     if (locked.current || matched[id]) return;
     if (!selected) {
-      setMessage("Chạm vào chiếc loa trước nhé!");
+      setMessage(HINT);
       return;
     }
     if (id === selected) {
@@ -65,24 +70,33 @@ export default function MatchQuestion({ board, onDone }: { board: MatchBoard; on
   return (
     <>
       <p className="font-display text-2xl font-bold text-[var(--g-ink)]" aria-live="polite">
-        {message}
+        <Say text={message} />
       </p>
       <div className="grid w-full max-w-4xl grid-cols-[auto_1fr] gap-4 sm:gap-8">
         <ul className="flex flex-col justify-around gap-4" aria-label="Các âm thanh">
           {board.soundIds.map((id, i) => {
             const on = current === byId(id).audio;
             return (
-              <li key={id}>
+              // Tokens pop in; the selected one lifts (with rings while it plays);
+              // after a picture-first tap they give a little jelly nudge.
+              <li key={id} className="animate-pop-in" style={{ "--i": i } as React.CSSProperties}>
                 <button
                   type="button"
                   data-kid-target
                   data-token={id}
                   onClick={() => pickSound(id)}
                   aria-label={`Âm thanh ${i + 1}${matched[id] ? ", đã nối" : ""}`}
-                  className={`block rounded-full transition-transform active:scale-95 ${selected === id ? "scale-110 ring-8" : ""} ${matched[id] ? "opacity-60" : ""}`}
+                  className={`block rounded-full transition-[scale,translate,opacity] duration-300 ease-bounce active:scale-95 ${selected === id ? "-translate-y-1 scale-110 ring-8" : ""} ${
+                    matched[id] ? "opacity-60" : ""
+                  }`}
                   style={{ ["--tw-ring-color" as string]: `${TOKENS[i].color}55` }}
                 >
-                  <SoundToken index={i} playing={on} done={!!matched[id]} className="size-24 sm:size-28" />
+                  <SoundToken
+                    index={i}
+                    playing={on}
+                    done={!!matched[id]}
+                    className={`size-24 sm:size-28 ${message === HINT && !matched[id] ? "animate-jelly" : ""}`}
+                  />
                 </button>
               </li>
             );
@@ -93,28 +107,38 @@ export default function MatchQuestion({ board, onDone }: { board: MatchBoard; on
             const s = byId(id);
             const t = matched[id] ? tokenOf(id) : null;
             return (
-              <li key={id}>
+              // Pictures pop in; a matched one gets a check stamp and a sparkle burst.
+              <li key={id} className={`relative animate-pop-in ${t ? "z-10" : ""}`} style={{ "--i": i + 1 } as React.CSSProperties}>
                 <button
                   type="button"
                   data-kid-target
                   data-image={id}
                   onClick={() => pickImage(id)}
+                  onPointerDown={ripple}
                   aria-label={t ? `${s.name}, đã nối` : `Hình ${i + 1}`}
-                  className={`relative flex w-full flex-col overflow-hidden rounded-card border-4 bg-white shadow-md transition active:scale-95 ${
+                  className={`ripple-host relative flex w-full flex-col overflow-hidden rounded-card border-4 bg-white shadow-md transition active:scale-95 ${
                     selected ? "" : "opacity-80"
                   } ${wrongImage === id ? "animate-wiggle" : ""}`}
-                  style={{ borderColor: t ? t.color : "#fff" }}
+                  style={{ borderColor: t ? t.color : "#fff", ["--ripple-color" as string]: selected ? TOKENS[board.soundIds.indexOf(selected)].color : "currentColor" }}
                 >
                   <span className="block aspect-square w-full p-2">
                     <SoundArt image={s.image} />
                   </span>
                   {t && (
-                    <span className="absolute right-2 top-2 flex items-center gap-1 rounded-full px-2 py-1" style={{ background: t.soft }}>
-                      <Dots n={t.dots} color={t.color} />
-                    </span>
+                    <>
+                      <span aria-hidden className="game-stamp absolute left-2 top-2 grid size-9 place-items-center rounded-full text-white shadow-md" style={{ background: t.color }}>
+                        <Icon name="check" className="size-5" />
+                      </span>
+                      <span className="absolute right-2 top-2 flex animate-pop-in items-center gap-1 rounded-full px-2 py-1 [--i:3]" style={{ background: t.soft }}>
+                        <Dots n={t.dots} color={t.color} />
+                      </span>
+                    </>
                   )}
-                  <span className="flex min-h-10 items-center justify-center px-1 text-center font-display font-bold text-[var(--g-ink)]">{t ? s.name : ""}</span>
+                  <span className="flex min-h-10 items-center justify-center px-1 text-center font-display font-bold text-[var(--g-ink)]">
+                    {t ? <span className="animate-fade-up [--i:3]">{s.name}</span> : ""}
+                  </span>
                 </button>
+                <Burst trigger={!!t} variant="sparkles" count={10} spread={90} />
               </li>
             );
           })}

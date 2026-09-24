@@ -15,14 +15,15 @@ export default function TopicsPage() {
 
       {/* Header search sends ?q= here; results render client-side. */}
       <div id="tim-kiem" className="scroll-mt-24">
-        <Suspense fallback={<SearchForm className="mb-6 max-w-md" />}>
+        <Suspense fallback={<SearchForm className="sounds-search mb-6 max-w-md" />}>
           <SearchResults />
         </Suspense>
       </div>
 
-      <ul className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-5">
-        {groups.map((g) => (
-          <li key={g.slug}>
+      {/* Cards spring up one by one (transform only, so they paint at once). */}
+      <ul className="grid grid-cols-2 gap-4 [--stagger:50ms] md:grid-cols-3 lg:grid-cols-5">
+        {groups.map((g, i) => (
+          <li key={g.slug} className="animate-sounds-rise" style={{ "--i": i } as React.CSSProperties}>
             <TopicCard group={g} />
           </li>
         ))}

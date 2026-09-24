@@ -23,8 +23,8 @@ export default function StudentPage() {
       <h1 className="text-3xl font-bold text-navy md:text-4xl no-print">Góc sinh viên</h1>
       <p className="mt-2 text-lg text-ink no-print">Giáo án mẫu và tài liệu thực hành cho sinh viên ngành Giáo dục Mầm non.</p>
       <ul className="mt-4 flex flex-wrap gap-2 no-print">
-        {USES.map((u) => (
-          <li key={u} className="rounded-full bg-[#e5f8f2] px-3 py-1 text-sm font-semibold text-[#1f5e50]">
+        {USES.map((u, i) => (
+          <li key={u} className="animate-rise-in rounded-full bg-[#e5f8f2] px-3 py-1 text-sm font-semibold text-[#1f5e50]" style={{ "--i": i + 1 } as React.CSSProperties}>
             {u}
           </li>
         ))}
@@ -39,7 +39,7 @@ export default function StudentPage() {
           <PrintButton />
         </div>
 
-        <section className="mt-6">
+        <section className="reveal mt-6">
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="font-sans text-xl font-bold text-ink">Mục tiêu</h3>
             <SampleBadge />
@@ -51,7 +51,7 @@ export default function StudentPage() {
           </ul>
         </section>
 
-        <section className="mt-6">
+        <section className="reveal mt-6">
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="font-sans text-xl font-bold text-ink">Chuẩn bị</h3>
             <SampleBadge />
@@ -77,7 +77,7 @@ export default function StudentPage() {
           <p className="text-sm text-muted">Theo kịch bản trong Đề xuất MVP (mục 6).</p>
           <ol className="mt-3 space-y-3">
             {STEPS.map(([t, d]) => (
-              <li key={t} className="rounded-2xl border-l-4 border-[#2e7d6b] bg-[#f4fbf8] p-3">
+              <li key={t} className="reveal-left rounded-2xl border-l-4 border-[#2e7d6b] bg-[#f4fbf8] p-3">
                 <p className="font-bold text-ink">{t}</p>
                 <p className="text-ink">{d}</p>
               </li>
@@ -85,7 +85,7 @@ export default function StudentPage() {
           </ol>
         </section>
 
-        <section className="mt-6">
+        <section className="reveal mt-6">
           <div className="flex flex-wrap items-center gap-2">
             <h3 className="font-sans text-xl font-bold text-ink">Quan sát – đánh giá</h3>
             <SampleBadge />
