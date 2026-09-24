@@ -1,0 +1,488 @@
+[
+  {
+    "id": "mua-roi",
+    "name": "Mưa rơi",
+    "keywords": "thời tiết",
+    "group": "tu-nhien",
+    "audio": "/audio/tu-nhien/mua-roi.mp3",
+    "image": "/images/sounds/mua-roi.webp",
+    "featured": false,
+    "confusable": [
+      "suoi-chay",
+      "rua-tay"
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Rain_(1).ogg",
+    "author": "ezwa (PDsounds.org)",
+    "license": "Public domain",
+    "placeholder": false
+  },
+  {
+    "id": "gio-thoi",
+    "name": "Gió thổi",
+    "keywords": "thời tiết",
+    "group": "tu-nhien",
+    "audio": "/audio/tu-nhien/gio-thoi.mp3",
+    "image": "/images/sounds/gio-thoi.webp",
+    "featured": false,
+    "confusable": [],
+    "source": "https://commons.wikimedia.org/wiki/File:Howling_wind.ogg",
+    "author": "Tvabutzku1234",
+    "license": "CC0",
+    "placeholder": false
+  },
+  {
+    "id": "sam",
+    "name": "Tiếng sấm",
+    "keywords": "sét, giông, thời tiết",
+    "group": "tu-nhien",
+    "audio": "/audio/tu-nhien/sam.mp3",
+    "image": "/images/sounds/sam.webp",
+    "featured": false,
+    "confusable": [],
+    "source": "https://commons.wikimedia.org/wiki/File:Tonitrus.ogg",
+    "author": "Mysid",
+    "license": "Public domain",
+    "placeholder": false
+  },
+  {
+    "id": "suoi-chay",
+    "name": "Nước suối chảy",
+    "group": "tu-nhien",
+    "audio": "/audio/tu-nhien/suoi-chay.mp3",
+    "image": "/images/sounds/suoi-chay.webp",
+    "featured": false,
+    "confusable": [
+      "mua-roi",
+      "rua-tay"
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:433589_jackthemurray_stream-river-water-up-close.wav",
+    "author": "jackthemurray (Freesound)",
+    "license": "CC0",
+    "placeholder": false
+  },
+  {
+    "id": "chim-hot",
+    "name": "Chim hót",
+    "keywords": "động vật, con vật",
+    "group": "tu-nhien",
+    "audio": "/audio/tu-nhien/chim-hot.mp3",
+    "image": "/images/sounds/chim-hot.webp",
+    "featured": true,
+    "confusable": [],
+    "source": "https://commons.wikimedia.org/wiki/File:Indian_Golden_Oriole_song,_Maharashtra.oga",
+    "author": "Gypsypkd",
+    "license": "Public domain",
+    "placeholder": false
+  },
+  {
+    "id": "ga-gay",
+    "name": "Gà gáy",
+    "keywords": "động vật, con vật",
+    "group": "tu-nhien",
+    "audio": "/audio/tu-nhien/ga-gay.mp3",
+    "image": "/images/sounds/ga-gay.webp",
+    "featured": false,
+    "confusable": [],
+    "source": "https://commons.wikimedia.org/wiki/File:Medium_rooster_crowing.ogg",
+    "author": "alys (PDsounds.org)",
+    "license": "Public domain",
+    "placeholder": false
+  },
+  {
+    "id": "cho-sua",
+    "name": "Chó sủa",
+    "keywords": "động vật, con vật, cún",
+    "group": "tu-nhien",
+    "audio": "/audio/tu-nhien/cho-sua.mp3",
+    "image": "/images/sounds/cho-sua.webp",
+    "featured": false,
+    "confusable": [],
+    "source": "https://bigsoundbank.com/barking-dog-inside-s0112.html",
+    "author": "Joseph SARDIN",
+    "license": "CC0",
+    "placeholder": false
+  },
+  {
+    "id": "meo-keu",
+    "name": "Mèo kêu",
+    "keywords": "động vật, con vật",
+    "group": "tu-nhien",
+    "audio": "/audio/tu-nhien/meo-keu.mp3",
+    "image": "/images/sounds/meo-keu.webp",
+    "featured": false,
+    "confusable": [],
+    "source": "https://commons.wikimedia.org/wiki/File:Weibliche_Britisch_Kurzhaar_will_Futter_C1277_MIAUEN.wav",
+    "author": "PantheraLeo1359531",
+    "license": "CC BY 4.0",
+    "placeholder": false
+  },
+  {
+    "id": "vit-keu",
+    "name": "Vịt kêu",
+    "keywords": "động vật, con vật",
+    "group": "tu-nhien",
+    "audio": "/audio/tu-nhien/vit-keu.mp3",
+    "image": "/images/sounds/vit-keu.webp",
+    "featured": false,
+    "confusable": [],
+    "source": "https://bigsoundbank.com/ducks-s0276.html",
+    "author": "DenisChardonnet",
+    "license": "CC0",
+    "placeholder": false
+  },
+  {
+    "id": "coi-o-to",
+    "name": "Còi ô tô",
+    "keywords": "phương tiện, giao thông",
+    "group": "moi-truong-xung-quanh",
+    "audio": "/audio/moi-truong-xung-quanh/coi-o-to.mp3",
+    "image": "/images/sounds/coi-o-to.webp",
+    "featured": true,
+    "confusable": [],
+    "source": "https://commons.wikimedia.org/wiki/File:Car_Horn.wav",
+    "author": "15HPanska_Ruttner_Jan",
+    "license": "CC0",
+    "placeholder": false
+  },
+  {
+    "id": "xe-may",
+    "name": "Xe máy",
+    "keywords": "phương tiện, giao thông",
+    "group": "moi-truong-xung-quanh",
+    "audio": "/audio/moi-truong-xung-quanh/xe-may.mp3",
+    "image": "/images/sounds/xe-may.webp",
+    "featured": false,
+    "confusable": [],
+    "source": "https://commons.wikimedia.org/wiki/File:Motorbike_1.ogg",
+    "author": "ezwa (PDsounds.org)",
+    "license": "Public domain",
+    "placeholder": false
+  },
+  {
+    "id": "xe-cuu-thuong",
+    "name": "Xe cứu thương",
+    "keywords": "phương tiện, giao thông",
+    "group": "moi-truong-xung-quanh",
+    "audio": "/audio/moi-truong-xung-quanh/xe-cuu-thuong.mp3",
+    "image": "/images/sounds/xe-cuu-thuong.webp",
+    "featured": false,
+    "confusable": [],
+    "source": "https://bigsoundbank.com/ambulance-siren-2-s1464.html",
+    "author": "Joseph SARDIN",
+    "license": "CC0",
+    "placeholder": false
+  },
+  {
+    "id": "may-bay",
+    "name": "Máy bay",
+    "keywords": "phương tiện, giao thông",
+    "group": "moi-truong-xung-quanh",
+    "audio": "/audio/moi-truong-xung-quanh/may-bay.mp3",
+    "image": "/images/sounds/may-bay.webp",
+    "featured": false,
+    "confusable": [],
+    "source": "https://commons.wikimedia.org/wiki/File:428086_inspectorj_airplane-boeing-flyby-right-to-left-a.wav",
+    "author": "InspectorJ (www.jshaw.co.uk, Freesound)",
+    "license": "CC BY 4.0",
+    "placeholder": false
+  },
+  {
+    "id": "tau-hoa",
+    "name": "Tàu hoả",
+    "keywords": "phương tiện, giao thông, tàu hỏa",
+    "group": "moi-truong-xung-quanh",
+    "audio": "/audio/moi-truong-xung-quanh/tau-hoa.mp3",
+    "image": "/images/sounds/tau-hoa.webp",
+    "featured": false,
+    "confusable": [],
+    "source": "https://bigsoundbank.com/freight-train-crossing-s3341.html",
+    "author": "Joseph SARDIN & Axeline T.",
+    "license": "CC0",
+    "placeholder": false
+  },
+  {
+    "id": "chuong-xe-dap",
+    "name": "Chuông xe đạp",
+    "keywords": "phương tiện, giao thông",
+    "group": "moi-truong-xung-quanh",
+    "audio": "/audio/moi-truong-xung-quanh/chuong-xe-dap.mp3",
+    "image": "/images/sounds/chuong-xe-dap.webp",
+    "featured": false,
+    "confusable": [
+      "chuong-dong-ho",
+      "dien-thoai-reo"
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Bike-bell.wav",
+    "author": "kklab5050",
+    "license": "CC BY 3.0",
+    "placeholder": false
+  },
+  {
+    "id": "cho-dong-nguoi",
+    "name": "Chợ đông người",
+    "group": "moi-truong-xung-quanh",
+    "audio": "/audio/moi-truong-xung-quanh/cho-dong-nguoi.mp3",
+    "image": "/images/sounds/cho-dong-nguoi.webp",
+    "featured": false,
+    "confusable": [
+      "san-truong"
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Carbon_Market_Night_soundscapes.ogg",
+    "author": "Bim24",
+    "license": "CC BY 4.0",
+    "placeholder": false
+  },
+  {
+    "id": "san-truong",
+    "name": "Sân trường giờ ra chơi",
+    "group": "moi-truong-xung-quanh",
+    "audio": "/audio/moi-truong-xung-quanh/san-truong.mp3",
+    "image": "/images/sounds/san-truong.webp",
+    "featured": false,
+    "confusable": [
+      "tre-choi-dua",
+      "cho-dong-nguoi"
+    ],
+    "source": "https://bigsoundbank.com/school-playground-football-s1072.html",
+    "author": "Francois TJP",
+    "license": "CC0",
+    "placeholder": false
+  },
+  {
+    "id": "go-cua",
+    "name": "Gõ cửa",
+    "group": "vat-dung",
+    "audio": "/audio/vat-dung/go-cua.mp3",
+    "image": "/images/sounds/go-cua.webp",
+    "featured": false,
+    "confusable": [
+      "phach-tre"
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Knocking_on_wood_or_door.ogg",
+    "author": "stephan (PDsounds.org)",
+    "license": "Public domain",
+    "placeholder": false
+  },
+  {
+    "id": "chuong-dong-ho",
+    "name": "Chuông đồng hồ báo thức",
+    "group": "vat-dung",
+    "audio": "/audio/vat-dung/chuong-dong-ho.mp3",
+    "image": "/images/sounds/chuong-dong-ho.webp",
+    "featured": false,
+    "confusable": [
+      "dien-thoai-reo",
+      "chuong-xe-dap"
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:WWS_Alarmclockringing.ogg",
+    "author": "Work With Sounds / Technical Museum of Slovenia",
+    "license": "CC BY 4.0",
+    "placeholder": false
+  },
+  {
+    "id": "thia-cham-bat",
+    "name": "Thìa chạm bát",
+    "group": "vat-dung",
+    "audio": "/audio/vat-dung/thia-cham-bat.mp3",
+    "image": "/images/sounds/thia-cham-bat.webp",
+    "featured": true,
+    "confusable": [],
+    "source": "https://bigsoundbank.com/spoon-in-a-mug-empty-s0411.html",
+    "author": "Joseph SARDIN (BigSoundBank)",
+    "license": "CC0",
+    "placeholder": false
+  },
+  {
+    "id": "keo-khoa",
+    "name": "Kéo khoá áo",
+    "group": "vat-dung",
+    "audio": "/audio/vat-dung/keo-khoa.mp3",
+    "image": "/images/sounds/keo-khoa.webp",
+    "featured": false,
+    "confusable": [],
+    "source": "https://bigsoundbank.com/zip-1-s0014.html",
+    "author": "Joseph SARDIN (BigSoundBank)",
+    "license": "CC0",
+    "placeholder": false
+  },
+  {
+    "id": "dien-thoai-reo",
+    "name": "Điện thoại reo",
+    "group": "vat-dung",
+    "audio": "/audio/vat-dung/dien-thoai-reo.mp3",
+    "image": "/images/sounds/dien-thoai-reo.webp",
+    "featured": false,
+    "confusable": [
+      "chuong-dong-ho",
+      "chuong-xe-dap"
+    ],
+    "source": "https://bigsoundbank.com/landline-ringtone-s0063.html",
+    "author": "Joseph SARDIN (BigSoundBank)",
+    "license": "CC0",
+    "placeholder": false
+  },
+  {
+    "id": "phach-tre",
+    "name": "Gõ phách tre",
+    "keywords": "nhạc cụ",
+    "group": "vat-dung",
+    "audio": "/audio/vat-dung/phach-tre.mp3",
+    "image": "/images/sounds/phach-tre.webp",
+    "featured": false,
+    "confusable": [
+      "go-cua"
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Claves.ogg",
+    "author": "Wikipedia-ce",
+    "license": "Public domain",
+    "placeholder": false
+  },
+  {
+    "id": "trong-lac",
+    "name": "Xắc xô",
+    "keywords": "nhạc cụ, trống lắc, tambourine",
+    "group": "vat-dung",
+    "audio": "/audio/vat-dung/trong-lac.mp3",
+    "image": "/images/sounds/trong-lac.webp",
+    "featured": false,
+    "confusable": [
+      "xuc-xac"
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Tambourine.ogg",
+    "author": "Freddythehat (English Wikipedia)",
+    "license": "Public domain",
+    "placeholder": false
+  },
+  {
+    "id": "xuc-xac",
+    "name": "Xúc xắc",
+    "keywords": "nhạc cụ, đồ chơi",
+    "group": "vat-dung",
+    "audio": "/audio/vat-dung/xuc-xac.mp3",
+    "image": "/images/sounds/xuc-xac.webp",
+    "featured": false,
+    "confusable": [
+      "trong-lac"
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Babys_rattle.ogg",
+    "author": "ezwa (PDsounds.org)",
+    "license": "Public domain",
+    "placeholder": false
+  },
+  {
+    "id": "vo-tay",
+    "name": "Vỗ tay",
+    "group": "hoat-dong-quen-thuoc",
+    "audio": "/audio/hoat-dong-quen-thuoc/vo-tay.mp3",
+    "image": "/images/sounds/vo-tay.webp",
+    "featured": false,
+    "confusable": [],
+    "source": "https://bigsoundbank.com/applause-from-40-people-1-s3517.html",
+    "author": "Joseph SARDIN (BigSoundBank)",
+    "license": "CC0",
+    "placeholder": false
+  },
+  {
+    "id": "tre-choi-dua",
+    "name": "Trẻ chơi đùa",
+    "group": "hoat-dong-quen-thuoc",
+    "audio": "/audio/hoat-dong-quen-thuoc/tre-choi-dua.mp3",
+    "image": "/images/sounds/tre-choi-dua.webp",
+    "featured": true,
+    "confusable": [
+      "san-truong",
+      "tieng-cuoi",
+      "buoc-chay"
+    ],
+    "source": "https://bigsoundbank.com/recreation-kindergarten-2-s2741.html",
+    "author": "Joseph SARDIN (BigSoundBank)",
+    "license": "CC0",
+    "placeholder": false
+  },
+  {
+    "id": "buoc-chay",
+    "name": "Bước chạy",
+    "group": "hoat-dong-quen-thuoc",
+    "audio": "/audio/hoat-dong-quen-thuoc/buoc-chay.mp3",
+    "image": "/images/sounds/buoc-chay.webp",
+    "featured": false,
+    "confusable": [],
+    "source": "https://bigsoundbank.com/fast-steps-on-concrete-s1319.html",
+    "author": "Joseph SARDIN (BigSoundBank)",
+    "license": "CC0",
+    "placeholder": false
+  },
+  {
+    "id": "dap-bong",
+    "name": "Đập bóng",
+    "group": "hoat-dong-quen-thuoc",
+    "audio": "/audio/hoat-dong-quen-thuoc/dap-bong.mp3",
+    "image": "/images/sounds/dap-bong.webp",
+    "featured": false,
+    "confusable": [],
+    "source": "https://bigsoundbank.com/ball-rebounds-s1045.html",
+    "author": "Joseph SARDIN (BigSoundBank)",
+    "license": "CC0",
+    "placeholder": false
+  },
+  {
+    "id": "danh-rang",
+    "name": "Đánh răng",
+    "keywords": "vệ sinh",
+    "group": "hoat-dong-quen-thuoc",
+    "audio": "/audio/hoat-dong-quen-thuoc/danh-rang.mp3",
+    "image": "/images/sounds/danh-rang.webp",
+    "featured": false,
+    "confusable": [],
+    "source": "https://commons.wikimedia.org/wiki/File:Brushing_ones_teeth.ogg",
+    "author": "ezwa (PDsounds.org)",
+    "license": "Public domain",
+    "placeholder": false
+  },
+  {
+    "id": "rua-tay",
+    "name": "Rửa tay",
+    "keywords": "vệ sinh",
+    "group": "hoat-dong-quen-thuoc",
+    "audio": "/audio/hoat-dong-quen-thuoc/rua-tay.mp3",
+    "image": "/images/sounds/rua-tay.webp",
+    "featured": false,
+    "confusable": [
+      "suoi-chay",
+      "mua-roi"
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Washing_hands_in_sink.ogg",
+    "author": "jim_mowatt (PDsounds.org)",
+    "license": "Public domain",
+    "placeholder": false
+  },
+  {
+    "id": "tieng-cuoi",
+    "name": "Tiếng cười",
+    "group": "hoat-dong-quen-thuoc",
+    "audio": "/audio/hoat-dong-quen-thuoc/tieng-cuoi.mp3",
+    "image": "/images/sounds/tieng-cuoi.webp",
+    "featured": false,
+    "confusable": [
+      "tre-choi-dua"
+    ],
+    "source": "https://commons.wikimedia.org/wiki/File:Four_Years_Old_child_laughing.ogg",
+    "author": "morgantj",
+    "license": "CC BY 3.0",
+    "placeholder": false
+  },
+  {
+    "id": "an-tao",
+    "name": "Cắn táo giòn",
+    "keywords": "ăn",
+    "group": "hoat-dong-quen-thuoc",
+    "audio": "/audio/hoat-dong-quen-thuoc/an-tao.mp3",
+    "image": "/images/sounds/an-tao.webp",
+    "featured": false,
+    "confusable": [],
+    "source": "https://bigsoundbank.com/apple-crunched-3-s3081.html",
+    "author": "Joseph SARDIN (BigSoundBank)",
+    "license": "CC0",
+    "placeholder": false
+  }
+]

@@ -1,0 +1,152 @@
+@import "tailwindcss";
+
+/* Design tokens. Colours sampled from document/image.png, then darkened where
+   needed so every text/background pair passes WCAG AA (checked in the handover report). */
+@theme inline {
+  --font-display: var(--font-baloo), "Baloo 2", system-ui, sans-serif;
+  --font-sans: var(--font-nunito), "Nunito", system-ui, sans-serif;
+}
+
+@theme {
+  --color-page: #fcfbfd;
+  --color-header: #fcf8f9;
+  --color-ink: #2b3f5c;
+  --color-navy: #305b7e;
+  --color-muted: #5f6b7a;
+  --color-line: #e6e8ef;
+
+  --color-pink: #d6336c;
+  --color-pink-dark: #b8285a;
+  --color-pink-soft: #feedf3;
+  --color-pink-ink: #b0306a;
+  --color-blue: #2f6fb0;
+  --color-sky: #cff1fd;
+  --color-footer: #3a6a9a;
+
+  --radius-card: 1.25rem;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-page);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-blue);
+  outline-offset: 3px;
+}
+/* Dark footer: a blue ring would be invisible there. */
+footer :focus-visible {
+  outline-color: #fff;
+}
+
+/* Kids' area: no double-tap zoom delay, no text selection, no iOS long-press
+   callout or image dragging. Pinch-zoom stays enabled for accessibility. */
+.kid-zone {
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+.kid-zone img {
+  -webkit-user-drag: none;
+}
+
+/* "Now playing" sound bars (slow, < 3 flashes/s). */
+@keyframes bar {
+  0%,
+  100% {
+    transform: scaleY(0.35);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+.sound-bars span {
+  display: inline-block;
+  width: 0.35rem;
+  height: 1.4rem;
+  border-radius: 999px;
+  background: currentColor;
+  transform-origin: bottom;
+  transform: scaleY(0.35);
+}
+.is-playing .sound-bars span {
+  animation: bar 0.9s ease-in-out infinite;
+}
+.is-playing .sound-bars span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.is-playing .sound-bars span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+.is-playing .sound-bars span:nth-child(4) {
+  animation-delay: 0.45s;
+}
+
+@keyframes wiggle {
+  0%,
+  100% {
+    transform: rotate(0);
+  }
+  25% {
+    transform: rotate(-3deg);
+  }
+  75% {
+    transform: rotate(3deg);
+  }
+}
+.animate-wiggle {
+  animation: wiggle 0.4s ease-in-out 2;
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+.animate-pop {
+  animation: pop 0.25s ease-out both;
+}
+
+/* Reduced motion is honoured everywhere, kids' area included: moving cues are
+   replaced by a static highlight (bars full height + ring on the card). */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+  .is-playing .sound-bars span {
+    transform: scaleY(1);
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  body {
+    background: #fff;
+  }
+}

@@ -1,0 +1,87 @@
+[
+  {
+    "slug": "tu-nhien",
+    "name": "Âm thanh tự nhiên",
+    "short": "Tự nhiên",
+    "description": "Mưa, gió, sấm, suối và tiếng các con vật quanh ta.",
+    "image": "/images/topics/tu-nhien.webp",
+    "colors": {
+      "bg": "#e5fae7",
+      "accent": "#51995a",
+      "ink": "#2f6b37"
+    },
+    "followUp": {
+      "question": "Con đã từng nghe tiếng mưa ở đâu?",
+      "activity": "Cả lớp dùng ngón tay gõ nhẹ lên bàn: từ mưa lâm thâm đến mưa rào."
+    },
+    "caption": "Âm thanh tự nhiên"
+  },
+  {
+    "slug": "moi-truong-xung-quanh",
+    "name": "Âm thanh môi trường xung quanh",
+    "short": "Môi trường",
+    "description": "Xe cộ, chợ, sân trường — những âm thanh trên đường đến lớp.",
+    "image": "/images/topics/moi-truong-xung-quanh.webp",
+    "colors": {
+      "bg": "#fce9e5",
+      "accent": "#de7778",
+      "ink": "#a33a3c"
+    },
+    "followUp": {
+      "question": "Trên đường đến trường, con nghe thấy những tiếng gì?",
+      "activity": "Trẻ đóng vai xe cộ, bắt chước tiếng còi và tiếng xe cứu thương."
+    },
+    "caption": "Môi trường xung quanh"
+  },
+  {
+    "slug": "vat-dung",
+    "name": "Âm thanh vật dụng",
+    "short": "Vật dụng",
+    "description": "Tiếng đồ vật trong nhà và các dụng cụ gõ, lắc đơn giản.",
+    "image": "/images/topics/vat-dung.webp",
+    "colors": {
+      "bg": "#eee4fc",
+      "accent": "#ab72bf",
+      "ink": "#7a3f94"
+    },
+    "followUp": {
+      "question": "Đồ vật nào trong lớp mình có thể tạo ra âm thanh?",
+      "activity": "Trẻ tìm đồ vật an toàn trong lớp (thìa, hộp, phách) và thử gõ, lắc."
+    },
+    "caption": "Vật dụng"
+  },
+  {
+    "slug": "hoat-dong-quen-thuoc",
+    "name": "Âm thanh hoạt động quen thuộc",
+    "short": "Hoạt động",
+    "description": "Vỗ tay, chạy, cười đùa — âm thanh từ việc chúng mình làm mỗi ngày.",
+    "image": "/images/topics/hoat-dong-quen-thuoc.webp",
+    "colors": {
+      "bg": "#dceffe",
+      "accent": "#63aae8",
+      "ink": "#2a6aa3"
+    },
+    "followUp": {
+      "question": "Khi chơi ngoài sân, con tạo ra những âm thanh nào?",
+      "activity": "Trò chơi 'Làm theo âm thanh': nghe vỗ tay thì vỗ tay, nghe bước chạy thì chạy tại chỗ, nghe đập bóng thì nhảy lên."
+    },
+    "caption": "Hoạt động quen thuộc"
+  },
+  {
+    "slug": "dac-tinh-am-thanh",
+    "name": "Đặc tính cơ bản của âm thanh",
+    "short": "Đặc tính",
+    "description": "Nghe hai âm và so sánh: to – nhỏ, nhanh – chậm, cao – thấp.",
+    "image": "/images/topics/dac-tinh-am-thanh.webp",
+    "colors": {
+      "bg": "#fbf7d2",
+      "accent": "#f3ba77",
+      "ink": "#9a5b12"
+    },
+    "followUp": {
+      "question": "Làm sao để con vỗ tay thật to? Còn vỗ thật nhỏ thì sao?",
+      "activity": "Trẻ đi theo nhịp trống: trống nhanh thì đi nhanh, trống chậm thì đi chậm."
+    },
+    "caption": "Đặc tính âm thanh"
+  }
+]

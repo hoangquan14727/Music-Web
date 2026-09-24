@@ -1,0 +1,114 @@
+[
+  {
+    "id": "nghe-doan-con-vat",
+    "title": "Bé đoán con vật qua tiếng kêu",
+    "ages": ["3-4", "4-5"],
+    "activity": "kham-pha",
+    "groups": ["tu-nhien"],
+    "soundIds": ["ga-gay", "cho-sua", "meo-keu", "vit-keu"],
+    "minutes": 10,
+    "steps": [
+      "Cô bật lần lượt 3–4 tiếng con vật, trẻ nhắm mắt lắng nghe.",
+      "Trẻ đoán tên con vật, cô mở hình để kiểm chứng.",
+      "Trẻ bắt chước tiếng kêu và dáng đi của con vật đó."
+    ]
+  },
+  {
+    "id": "mua-to-mua-nho",
+    "title": "Mưa to, mưa nhỏ",
+    "ages": ["3-4", "4-5", "5-6"],
+    "activity": "am-nhac",
+    "groups": ["tu-nhien", "dac-tinh-am-thanh"],
+    "soundIds": ["mua-roi", "sam"],
+    "minutes": 8,
+    "steps": [
+      "Cô cho trẻ nghe tiếng mưa rơi và tiếng sấm.",
+      "Trẻ dùng ngón tay gõ lên bàn: mưa nhỏ gõ nhẹ, mưa to gõ mạnh.",
+      "Nghe tiếng sấm thì cả lớp cùng ngồi xuống thật nhanh."
+    ]
+  },
+  {
+    "id": "duong-den-truong",
+    "title": "Âm thanh trên đường đến trường",
+    "ages": ["4-5", "5-6"],
+    "activity": "ngon-ngu",
+    "groups": ["moi-truong-xung-quanh"],
+    "soundIds": ["coi-o-to", "xe-may", "chuong-xe-dap", "xe-cuu-thuong"],
+    "minutes": 12,
+    "steps": [
+      "Cô hỏi: 'Hôm nay con nghe thấy những âm thanh gì trên đường đến trường?'",
+      "Cô bật 3–4 âm thanh xe cộ, trẻ chọn hình tương ứng theo nhóm nhỏ.",
+      "Trẻ kể lại một âm thanh mình nghe thấy, cô mở rộng từ vựng (còi, chuông, còi hụ)."
+    ]
+  },
+  {
+    "id": "ban-nhac-do-vat",
+    "title": "Ban nhạc đồ vật",
+    "ages": ["4-5", "5-6"],
+    "activity": "am-nhac",
+    "groups": ["vat-dung"],
+    "soundIds": ["phach-tre", "trong-lac", "xuc-xac"],
+    "minutes": 12,
+    "steps": [
+      "Trẻ nghe tiếng phách tre, xắc xô, xúc xắc và đoán tên dụng cụ.",
+      "Chia lớp thành 3 nhóm, mỗi nhóm cầm một loại dụng cụ thật.",
+      "Cô bật một âm thanh — nhóm nào có dụng cụ đó thì chơi theo."
+    ]
+  },
+  {
+    "id": "do-vat-trong-nha",
+    "title": "Đồ vật nào kêu thế nhỉ?",
+    "ages": ["3-4", "4-5"],
+    "activity": "kham-pha",
+    "groups": ["vat-dung"],
+    "soundIds": ["go-cua", "chuong-dong-ho", "thia-cham-bat", "dien-thoai-reo"],
+    "minutes": 10,
+    "steps": [
+      "Cô đặt 3–4 đồ vật thật (hoặc tranh) lên bàn.",
+      "Cô bật âm thanh trên website, trẻ chạm đúng đồ vật phát ra âm thanh đó.",
+      "Trẻ thử tự tạo âm thanh với đồ vật thật và so sánh."
+    ]
+  },
+  {
+    "id": "lam-theo-am-thanh",
+    "title": "Làm theo âm thanh",
+    "ages": ["3-4", "4-5", "5-6"],
+    "activity": "am-nhac",
+    "groups": ["hoat-dong-quen-thuoc"],
+    "soundIds": ["vo-tay", "buoc-chay", "dap-bong"],
+    "minutes": 8,
+    "steps": [
+      "Cô thống nhất: tiếng vỗ tay – trẻ vỗ tay; tiếng bước chạy – chạy tại chỗ; tiếng đập bóng – nhảy lên.",
+      "Cô bật lần lượt từng âm thanh, trẻ làm động tác tương ứng.",
+      "Tăng dần tốc độ, rồi cho một bạn lên làm 'người bật âm thanh'."
+    ]
+  },
+  {
+    "id": "gio-ve-sinh",
+    "title": "Chuyển sang giờ vệ sinh",
+    "ages": ["3-4", "4-5"],
+    "activity": "chuyen-tiep",
+    "groups": ["hoat-dong-quen-thuoc"],
+    "soundIds": ["rua-tay", "danh-rang"],
+    "minutes": 5,
+    "steps": [
+      "Cô bật tiếng rửa tay làm tín hiệu chuyển hoạt động.",
+      "Trẻ đoán: 'Âm thanh này nhắc chúng mình làm gì?'",
+      "Cả lớp xếp hàng đi rửa tay, vừa đi vừa bắt chước tiếng nước chảy."
+    ]
+  },
+  {
+    "id": "thu-gian-rung",
+    "title": "Thư giãn cùng khu rừng",
+    "ages": ["3-4", "4-5", "5-6"],
+    "activity": "chuyen-tiep",
+    "groups": ["tu-nhien"],
+    "soundIds": ["chim-hot", "suoi-chay", "gio-thoi"],
+    "minutes": 5,
+    "steps": [
+      "Trẻ nằm hoặc ngồi thoải mái, nhắm mắt.",
+      "Cô bật lần lượt tiếng chim hót, suối chảy, gió thổi (hoặc bản 'Âm thanh khu rừng' ở Thư viện nhạc).",
+      "Trẻ kể lại: 'Con nghe thấy những gì trong khu rừng?'"
+    ]
+  }
+]

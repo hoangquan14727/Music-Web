@@ -1,0 +1,41 @@
+[
+  {
+    "id": "nhac-ru-brahms",
+    "category": "nen-thu-gian",
+    "title": "Khúc hát ru (J. Brahms)",
+    "use": "Giờ ngủ trưa, thư giãn",
+    "audio": "/audio/music/nhac-ru-brahms.mp3",
+    "source": "https://commons.wikimedia.org/wiki/File:Johannes_Brahms_ninna_nanna_op_49_n_4.ogg",
+    "author": "Pracchia-78",
+    "license": "Public domain",
+    "placeholder": false,
+    "duration": 46,
+    "cover": "/images/cta/thu-vien-nhac.webp"
+  },
+  {
+    "id": "nhac-rung",
+    "category": "nen-thu-gian",
+    "title": "Âm thanh khu rừng",
+    "use": "Chuyển tiếp hoạt động, góc thiên nhiên",
+    "audio": "/audio/music/nhac-rung.mp3",
+    "source": "https://bigsoundbank.com/forest-3-s2715.html",
+    "author": "Pierre SIBANARCO (BigSoundBank)",
+    "license": "CC0",
+    "placeholder": false,
+    "duration": 90,
+    "cover": "/images/topics/tu-nhien.webp"
+  },
+  {
+    "id": "nhac-twinkle",
+    "category": "thieu-nhi",
+    "title": "Ngôi sao lấp lánh (giai điệu không lời)",
+    "use": "Vận động theo nhạc, hát cùng cô",
+    "audio": "/audio/music/nhac-twinkle.mp3",
+    "source": "https://commons.wikimedia.org/wiki/File:Mozart_-_12_Variations_K._265_-_Stefano_Ligoratti.mp3",
+    "author": "Stefano Ligoratti (piano) · W. A. Mozart",
+    "license": "CC BY 3.0",
+    "placeholder": false,
+    "duration": 47,
+    "cover": "/images/mascot/happy.webp"
+  }
+]

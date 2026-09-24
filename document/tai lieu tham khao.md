@@ -1,0 +1,2 @@
+Âm thanh trong tự nhiên và môi trường xung quanhTiếng kêu của động vật: Tiếng gà gáy, chó sủa, mèo kêu, vịt cạp cạp, tiếng chim hót.Âm thanh của hiện tượng tự nhiên: Tiếng mưa rơi, tiếng gió thổi, tiếng sấm chớp, tiếng nước chảy.Âm thanh phương tiện giao thông: Tiếng còi ô tô, tiếng xe máy, tiếng xe cứu thương, tiếng máy bay.
+Âm thanh từ các vật dụng và hoạt động quen thuộcTiếng động sinh hoạt: Tiếng gõ cửa, tiếng chuông đồng hồ, tiếng kéo rèm, tiếng bát đũa va chạm.Chất liệu và dụng cụ: Tiếng va đập của đá cuội, tiếng gõ phách tre, xúc xắc, trống lắc.
