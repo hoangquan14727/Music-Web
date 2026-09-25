@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     "Một không gian học tập và trải nghiệm âm thanh đầy màu sắc dành cho trẻ mầm non và giáo viên: nghe, nhận biết, phân biệt và chơi cùng âm thanh.",
   // Link previews (Discord, Facebook, Zalo…): the image is app/opengraph-image.jpg and
   // needs an absolute URL. Vercel sets the production domain at build time.
-  metadataBase: new URL(`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL ?? "music-web-theta-ashy.vercel.app"}`),
+  metadataBase: new URL(`https://${process.env.VERCEL_PROJECT_PRODUCTION_URL ?? "edtech-music.vercel.app"}`),
   openGraph: { type: "website", locale: "vi_VN", siteName: "Thế giới Âm thanh" },
   twitter: { card: "summary_large_image" },
 };

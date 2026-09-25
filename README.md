@@ -34,8 +34,8 @@ Supabase lo phần tài khoản (đăng ký, đăng nhập, quên mật khẩu).
    - để **“Confirm email” tắt** lúc đầu (lý do ở bước 4);
    - đặt độ dài mật khẩu tối thiểu (Minimum password length) là **8**.
 3. **Authentication → URL Configuration:**
-   - Site URL: `https://music-web-theta-ashy.vercel.app/`;
-   - Redirect URLs, thêm 3 dòng: `https://music-web-theta-ashy.vercel.app/**`, `http://localhost:3000/**`, `http://127.0.0.1:4321/**`.
+   - Site URL: `https://edtech-music.vercel.app/`;
+   - Redirect URLs, thêm 3 dòng: `https://edtech-music.vercel.app/**`, `http://localhost:3000/**`, `http://127.0.0.1:4321/**`.
 4. **Email:** email mặc định của Supabase **chỉ gửi tới thành viên trong nhóm Supabase của bạn** và tối đa 2 email mỗi giờ. Muốn giáo viên, phụ huynh nhận được email xác nhận hay email “Quên mật khẩu” thì:
    - cài SMTP miễn phí ở **Authentication → Emails → SMTP Settings**:
      - Gmail: bật xác minh 2 bước rồi tạo **mật khẩu ứng dụng**; host `smtp.gmail.com`, cổng `465`, username là địa chỉ Gmail, password là mật khẩu ứng dụng;
