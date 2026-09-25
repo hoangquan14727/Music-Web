@@ -32,7 +32,8 @@ function Wave({ className }: { className: string }) {
   );
 }
 
-export default function Footer() {
+// home: where the logo leads ("/" on public pages, the app home inside the app).
+export default function Footer({ home = "/" }: { home?: string }) {
   return (
     <footer className="relative bg-footer text-white no-print">
       <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-[calc(100%-1px)] h-5 overflow-hidden">
@@ -48,8 +49,8 @@ export default function Footer() {
           />
         ))}
       </div>
-      <div className="reveal relative mx-auto flex max-w-7xl flex-col items-center gap-4 px-4 py-6 lg:flex-row lg:justify-between">
-        <Link href="/" className="chrome-logo flex items-center gap-2">
+      <div className="relative mx-auto flex max-w-7xl flex-col items-center gap-4 px-4 py-6 lg:flex-row lg:justify-between">
+        <Link href={home} className="chrome-logo flex items-center gap-2">
           <Logo className="h-10 w-auto rounded-full bg-white/90 p-1" />
           <span className="font-display text-lg font-bold leading-tight">
             Thế giới

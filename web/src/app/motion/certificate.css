@@ -1,0 +1,28 @@
+/* "Phiếu bé ngoan" card (game result). Colours print as shown; the landscape
+   @page lives in the component so it only applies while the card is on screen. */
+.cert-card {
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+  border: 12px solid transparent;
+  border-radius: 2rem;
+  /* Faint confetti dots inside, candy-stripe pastel frame outside. */
+  background:
+    radial-gradient(#fbe3ec 1.5px, transparent 2px) 0 0 / 22px 22px padding-box,
+    linear-gradient(#fffdf6, #fffdf6) padding-box,
+    repeating-linear-gradient(135deg, #f9c6d8 0 14px, #fde7a6 14px 28px, #bfe3f7 28px 42px, #c8ecd8 42px 56px) border-box;
+  box-shadow: 0 10px 30px rgb(43 63 92 / 0.12);
+}
+.cert-inner {
+  border: 3px dashed #f19bbb;
+  border-radius: 1.3rem;
+}
+@media print {
+  /* body is min-h-dvh; keep it from spilling onto a blank second page. */
+  body:has(.cert) {
+    min-height: 0;
+  }
+  .cert-card {
+    box-shadow: none;
+    break-inside: avoid;
+  }
+}

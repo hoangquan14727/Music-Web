@@ -68,10 +68,25 @@ export default function AboutPage() {
       <section aria-labelledby="chinh-sach" className="space-y-2">
         <H2 id="chinh-sach">Chính sách bảo mật</H2>
         <ul className="list-disc space-y-1 pl-6 text-ink">
-          <li className="reveal">Website không có đăng nhập, không có tài khoản cho giáo viên hay trẻ.</li>
-          <li className="reveal">Không có biểu mẫu nào hỏi tên, tuổi hay thông tin cá nhân của trẻ.</li>
-          <li className="reveal">Không dùng quảng cáo, không dùng công cụ theo dõi người dùng và không lưu điểm số của trẻ.</li>
+          <li className="reveal">
+            Tài khoản chỉ dành cho người lớn: giáo viên và phụ huynh. Khi đăng ký, website thu họ và tên, email và vai trò (Giáo viên hoặc Phụ huynh).
+          </li>
+          <li className="reveal">
+            Các thông tin này được lưu ở Supabase (máy chủ khu vực Singapore) và chỉ dùng để đăng nhập và bảo vệ tài khoản. Mật khẩu được mã hoá, nhóm không xem được.
+          </li>
+          <li className="reveal">Để bảo vệ tài khoản, Supabase tự ghi thời điểm, địa chỉ IP và loại trình duyệt của mỗi lần đăng nhập.</li>
+          <li className="reveal">Trình duyệt ghi nhớ phiên đăng nhập trên máy đang dùng cho tới khi bấm “Đăng xuất”.</li>
+          <li className="reveal">Trẻ không có tài khoản. Website không thu tên, tuổi hay bất kỳ thông tin nào của trẻ và không lưu điểm số của trẻ.</li>
+          <li className="reveal">Tên bé gõ trên “Phiếu bé ngoan” chỉ dùng để in, không được lưu lại hay gửi đi đâu.</li>
+          <li className="reveal">Không dùng quảng cáo, không dùng công cụ theo dõi người dùng.</li>
           <li className="reveal">Không có liên kết tới trang bên ngoài trong các khu vực dành cho trẻ.</li>
+          <li className="reveal">
+            Muốn xoá tài khoản: gửi yêu cầu tới nhóm qua mục{" "}
+            <a href="#lien-he" className="text-blue underline">
+              Liên hệ
+            </a>{" "}
+            bằng email đã đăng ký. Nhóm sẽ xoá tài khoản cùng họ tên, email và vai trò đi kèm.
+          </li>
         </ul>
       </section>
 
@@ -82,6 +97,10 @@ export default function AboutPage() {
           <li className="reveal">Trong trò chơi, cô bấm “Bắt đầu” để máy cho phép phát âm thanh; các câu sau sẽ tự phát.</li>
           <li className="reveal">Hiệu ứng chuyển động luôn chạy, kể cả khi máy bật “Giảm chuyển động”. Nếu trẻ hay người lớn dễ chóng mặt vì chuyển động, bấm nút “Tắt hiệu ứng” ở cuối các trang (trong trò chơi: ở màn bắt đầu và màn kết quả): hiệu ứng được thay bằng khung màu tĩnh, trình duyệt sẽ nhớ lựa chọn này.</li>
           <li className="reveal">Khi dùng chung một máy tính bảng cho cả lớp, nên bật Truy cập được hướng dẫn (Guided Access) trên iPad hoặc Ghim màn hình trên Android để trẻ không thoát nhầm.</li>
+          <li className="reveal">
+            Đăng nhập trên máy dùng chung của lớp? Dùng xong, mở menu tài khoản ở góc trên (trên điện thoại: mở menu) rồi bấm “Đăng xuất”, để người khác không
+            dùng tiếp tài khoản của mình.
+          </li>
         </ul>
       </section>
 

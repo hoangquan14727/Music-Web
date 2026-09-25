@@ -6,7 +6,7 @@ export type IconName =
   | "home" | "topics" | "review" | "music" | "teacher" | "student" | "search" | "menu"
   | "close" | "info" | "arrow-right" | "arrow-left" | "chevron-right" | "play" | "pause"
   | "volume" | "replay" | "headphones" | "ear" | "gamepad" | "soundwave" | "star" | "heart"
-  | "lightbulb" | "printer" | "clock" | "users" | "check" | "prev" | "next" | "repeat" | "book";
+  | "lightbulb" | "printer" | "clock" | "users" | "check" | "prev" | "next" | "repeat" | "book" | "logout";
 
 const tint = { fill: "currentColor", fillOpacity: 0.24 } as const;
 const solid = { fill: "currentColor", stroke: "none" } as const;
@@ -160,6 +160,12 @@ const ICONS: Record<IconName, ReactNode> = {
     <>
       <path {...tint} d="M12 6.5c-2-1.6-5-2-8.5-1.6v13c3.5-.3 6.5.2 8.5 1.6" />
       <path {...tint} d="M12 6.5c2-1.6 5-2 8.5-1.6v13c-3.5-.3-6.5.2-8.5 1.6Z" />
+    </>
+  ),
+  logout: (
+    <>
+      <path {...tint} d="M11 4.5H6.9A1.9 1.9 0 0 0 5 6.4v11.2a1.9 1.9 0 0 0 1.9 1.9H11" />
+      <path d="M10.5 12h9.5m-3.4-3.6L20 12l-3.4 3.6" />
     </>
   ),
 };

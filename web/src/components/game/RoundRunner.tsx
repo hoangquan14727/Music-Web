@@ -6,6 +6,7 @@ import { preload, stop, unlock } from "@/lib/audio";
 import { tally, type ItemResult } from "@/lib/quiz";
 import Icon from "@/components/Icon";
 import GameShell from "./GameShell";
+import GoodKidCertificate from "./GoodKidCertificate";
 import { ConfettiRain, ResultStars, ScoreBadge } from "./Fx";
 
 export type RenderItem<T> = (item: T, onDone: (r: ItemResult) => void) => React.ReactNode;
@@ -136,10 +137,11 @@ export default function RoundRunner<T>({
 
   if (phase === "result") {
     const { correct, total } = tally(results);
+    const praise = correct === total ? "Tuyệt vời! Đôi tai của con thật tinh!" : "Con đã lắng nghe rất chăm chú. Mình cùng chơi thêm nhé!";
     return (
       <GameShell style={style}>
         <ConfettiRain />
-        <div className="flex flex-1 flex-col items-center justify-center gap-5 text-center" role="status">
+        <div className="no-print flex flex-1 flex-col items-center justify-center gap-5 text-center" role="status">
           <span className="relative block animate-bounce-in">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
@@ -152,9 +154,7 @@ export default function RoundRunner<T>({
           </span>
           <ResultStars />
           <h1 className="animate-fade-up text-4xl font-bold text-[var(--g-ink)] [--i:1] md:text-5xl">{resultText(correct, total)}</h1>
-          <p className="animate-fade-up text-xl text-ink [--i:2]">
-            {correct === total ? "Tuyệt vời! Đôi tai của con thật tinh!" : "Con đã lắng nghe rất chăm chú. Mình cùng chơi thêm nhé!"}
-          </p>
+          <p className="animate-fade-up text-xl text-ink [--i:2]">{praise}</p>
           <p className="max-w-lg animate-fade-up rounded-2xl bg-white p-3 text-muted [--i:3]">
             <strong className="text-ink">Hoạt động tiếp theo:</strong> {followUp}
           </p>
@@ -175,7 +175,15 @@ export default function RoundRunner<T>({
               Khám phá thêm <Icon name="arrow-right" className="size-7 transition-transform duration-300 ease-bounce group-hover:translate-x-1" />
             </Link>
           </div>
+          {/* The certificate is below the fold on tablets: point the teacher to it. */}
+          <a
+            href="#phieu-be-ngoan"
+            className="inline-flex min-h-12 animate-fade-up items-center gap-2 rounded-full bg-white px-5 font-bold text-[var(--g-ink)] shadow-sm ring-2 ring-[var(--g-accent)] [--i:4] hover:bg-[var(--g-bg)]"
+          >
+            <Icon name="star" className="size-5" /> Xem và in phiếu bé ngoan ↓
+          </a>
         </div>
+        <GoodKidCertificate game={title} correct={correct} total={total} praise={praise} />
       </GameShell>
     );
   }

@@ -17,8 +17,8 @@ export default function GameShell({
   progress?: { index: number; total: number };
 }) {
   return (
-    <main style={style} className="kid-zone flex min-h-dvh flex-col gap-4 overflow-x-clip overscroll-none bg-[var(--g-bg)] px-4 py-3">
-      <div className="flex items-center justify-between gap-4">
+    <main style={style} className="kid-zone flex min-h-dvh flex-col gap-4 overflow-x-clip overscroll-none bg-[var(--g-bg)] px-4 py-3 print:min-h-0 print:bg-white print:p-0">
+      <div className="no-print flex items-center justify-between gap-4">
         <Link
           href="/on-tap/"
           onClick={() => stop()}

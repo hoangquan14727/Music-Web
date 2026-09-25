@@ -2,6 +2,8 @@ import type { Metadata, Viewport } from "next";
 import { Baloo_2, Nunito } from "next/font/google";
 import { Intro } from "@/components/Loader";
 import NavPending from "@/components/NavPending";
+import AuthGuard from "@/components/AuthGuard";
+import { AUTH_KEY, HOME, PUBLIC_PATHS, loginUrl } from "@/lib/auth-paths";
 import "./globals.css";
 
 // Both fonts ship a Vietnamese subset (Comic Neue does not). next/font
@@ -25,6 +27,10 @@ export const viewport: Viewport = {
 };
 
 // Before first paint:
+// - the login gate (lib/auth-paths; also on a Back/Forward cache restore): a guest on
+//   a non-public page goes to /dang-nhap/?next=…, a logged-in visitor on / to HOME.
+//   The page is hidden meanwhile and nothing below runs; the "tgat-hop" flag lets the
+//   intro still play on the page it lands on (its referrer is then our own site);
 // - the "Tắt hiệu ứng" setting (data-motion="off", see lib/motion; the observer
 //   re-adds it when React resets <html> attributes, e.g. the dev Strict Mode remount);
 // - lazy content images (motion/loading.css): html.img-fx + data-loaded on load/error;
@@ -37,16 +43,20 @@ export const viewport: Viewport = {
 //   releases the wordmark once Baloo 2 is ready. The bar (--p) follows real steps
 //   (parsed, fonts, hero image decoded, window load), shown ≥ 0.95 s, done by ~2.4 s.
 //   A tap, key, wheel or swipe skips; the click that follows a skip tap is swallowed.
-const HEAD_SCRIPT = `(function(){var d=document.documentElement;function sync(){try{if(localStorage.getItem("tgat-motion")==="off"&&!d.dataset.motion)d.dataset.motion="off"}catch(e){}}
+const HEAD_SCRIPT = `(function(){var d=document.documentElement;
+function gate(){var p=location.pathname,s,to="";p=p.slice(-1)==="/"?p:p+"/";try{s=JSON.parse(localStorage.getItem(${JSON.stringify(AUTH_KEY)}))}catch(e){}
+if(!(s&&s.refresh_token)){if(${JSON.stringify(PUBLIC_PATHS)}.indexOf(p)<0)to=${JSON.stringify(loginUrl(""))}+encodeURIComponent(location.pathname+location.search+location.hash)}else if(p==="/")to=${JSON.stringify(HOME)};
+if(!to)return;d.style.visibility="hidden";try{sessionStorage.setItem("tgat-hop","1")}catch(e){}location.replace(to);return 1}
+if(gate())return;function sync(){try{if(localStorage.getItem("tgat-motion")==="off"&&!d.dataset.motion)d.dataset.motion="off"}catch(e){}}
 sync();new MutationObserver(sync).observe(d,{attributeFilter:["data-motion"]});
 function apply(){try{if(localStorage.getItem("tgat-motion")==="off")d.dataset.motion="off";else delete d.dataset.motion}catch(e){}}
-addEventListener("pageshow",function(e){e.persisted&&apply()});addEventListener("storage",function(e){(e.key==="tgat-motion"||e.key===null)&&apply()});
+addEventListener("pageshow",function(e){e.persisted&&(gate()||apply())});addEventListener("storage",function(e){(e.key==="tgat-motion"||e.key===null)&&apply()});
 d.classList.add("img-fx");function lazy(t){return t.tagName==="IMG"&&t.loading==="lazy"&&!t.closest("[aria-hidden]")}
 function mark(t,f){t.dataset.loaded=f?"in":"";f&&setTimeout(function(){t.dataset.loaded=""},450)}
 function img(e){lazy(e.target)&&mark(e.target,1)}document.addEventListener("load",img,true);document.addEventListener("error",img,true);
 addEventListener("DOMContentLoaded",function(){[].forEach.call(document.querySelectorAll("img[loading=lazy]:not([data-loaded])"),function(t){t.complete&&lazy(t)&&mark(t)})});
 addEventListener("animationiteration",function(e){e.animationName==="img-wait"&&e.target.complete&&mark(e.target,1)});
-var skip=1;try{skip=d.dataset.motion||document.hidden||sessionStorage.getItem("tgat-intro")||(document.referrer&&new URL(document.referrer).origin===location.origin);skip||sessionStorage.setItem("tgat-intro","1")}catch(e){}
+var skip=1;try{var hop=sessionStorage.getItem("tgat-hop");sessionStorage.removeItem("tgat-hop");skip=d.dataset.motion||document.hidden||sessionStorage.getItem("tgat-intro")||(!hop&&document.referrer&&new URL(document.referrer).origin===location.origin);skip||sessionStorage.setItem("tgat-intro","1")}catch(e){}
 if(skip)return;d.classList.add("intro-js","intro-on");setTimeout(function(){exit();d.classList.remove("intro-on")},3200);
 var t0=performance.now(),n=0,out=0,I,C={capture:true,passive:false},SKIP=["pointerdown","keydown","wheel","touchmove"];
 function el(){return I||(I=document.querySelector(".intro"))}function step(){n++}function font(){d.classList.add("intro-font")}
@@ -71,6 +81,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <Intro />
         {children}
         <NavPending />
+        <AuthGuard />
       </body>
     </html>
   );

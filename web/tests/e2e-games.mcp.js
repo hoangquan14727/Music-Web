@@ -1,7 +1,10 @@
 // End-to-end run of the 5 games, for the Playwright MCP tool (browser_run_code
-// with filename: web/tests/e2e-games.mcp.js). Needs the static site served:
+// with filename: web/tests/e2e-games.mcp.js). Needs the static site built with the
+// two NEXT_PUBLIC_SUPABASE_* values set (placeholders are fine) and served:
 //   npm run build && npx serve out -l 4321
-// Returns a short log; expected scores: NCH 5/6, Đoán 6/6 (4 options), Nối 8/9.
+// Games need login: a fake stored session is seeded first (no network) and
+// removed at the end. Returns a short log; expected scores: NCH 5/6,
+// Đoán 6/6 (4 options), Nối 8/9, and "Phiếu: ok" after NCH.
 // eslint-disable-next-line @typescript-eslint/no-unused-expressions -- the file is one function expression
 async (page) => {
   const BASE = 'http://127.0.0.1:4321';
@@ -19,6 +22,16 @@ async (page) => {
     if (old) await old.waitForElementState('hidden').catch(() => {});
   };
   await page.setViewportSize({ width: 1024, height: 768 });
+
+  // Fake long-lived session, stored the way Supabase stores it (unsigned JWT), set on a public page.
+  await page.goto(BASE + '/gioi-thieu/');
+  await page.evaluate(() => {
+    const b64 = (o) => btoa(JSON.stringify(o)).replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
+    const exp = 4102444800;
+    const user = { id: 'e2e', aud: 'authenticated', email: 'e2e@example.com', user_metadata: { full_name: 'Cô Test', role: 'giao-vien' }, app_metadata: {} };
+    const jwt = `${b64({ alg: 'none', typ: 'JWT' })}.${b64({ sub: user.id, aud: user.aud, role: 'authenticated', email: user.email, exp })}.`;
+    localStorage.setItem('tgat-auth', JSON.stringify({ access_token: jwt, refresh_token: 'e2e', token_type: 'bearer', expires_in: 3600, expires_at: exp, user }));
+  });
 
   // 1) Nghe – chọn hình: 1 wrong first tap, rest correct -> 5/6
   await page.goto(BASE + '/on-tap/nghe-chon-hinh/');
@@ -40,6 +53,34 @@ async (page) => {
     await next();
   }
   log.push('NCH: ' + (await page.getByRole('heading', { level: 1 }).innerText()));
+
+  // Phiếu bé ngoan: type a name, print shows only the certificate, the name is never stored.
+  const cert = page.locator('.cert').first();
+  const nameBox = page.getByRole('textbox', { name: 'Tên của bé' });
+  const printBtn = page.getByRole('button', { name: 'In phiếu / Lưu PDF' });
+  await cert.waitFor({ timeout: 5000 });
+  const titled = (await cert.locator('p', { hasText: 'PHIẾU BÉ NGOAN' }).count()) > 0 && (await cert.getByRole('heading', { name: /PHIẾU BÉ NGOAN/i }).count()) === 0;
+  const button = await printBtn.isVisible();
+  await nameBox.fill('Bé Na Zq7');
+  await nameBox.blur();
+  await page.emulateMedia({ media: 'print' });
+  const printed = (await cert.isVisible()) && (await nameBox.inputValue()) === 'Bé Na Zq7';
+  const buttonInPrint = await printBtn.isVisible();
+  // Anything else still showing on paper (sr-only skip links are 1 px, ignored).
+  const stray = await page.evaluate(() => {
+    const c = document.querySelector('.cert');
+    return [...document.querySelectorAll('a, button, input, h1, h2, img, svg, [role=status]')]
+      .filter((e) => !c?.contains(e) && e.checkVisibility({ opacityProperty: true, visibilityProperty: true }))
+      .filter((e) => { const r = e.getBoundingClientRect(); return r.width * r.height > 4; })
+      .map((e) => `${e.tagName.toLowerCase()} ${(e.textContent || e.getAttribute('alt') || '').trim().slice(0, 24)}`);
+  });
+  await page.emulateMedia({ media: 'screen' });
+  await page.waitForTimeout(300);
+  const stored = await page.evaluate((t) => [JSON.stringify({ ...localStorage }), JSON.stringify({ ...sessionStorage }), document.cookie, location.href].some((s) => s.includes(t)), 'Zq7');
+  log.push(
+    `Phiếu: ${titled && button && printed && !stray.length && !stored ? 'ok' : 'FAIL'} (title in <p> ${titled}, print button ${button}, ` +
+      `only .cert in print ${printed && !stray.length}${stray.length ? ' ' + JSON.stringify(stray) : ''}, name stored ${stored}; info: print button on paper ${buttonInPrint})`,
+  );
 
   // 2) Đoán âm thanh: level 5–6 tuổi -> 4 options
   await page.goto(BASE + '/on-tap/doan-am-thanh/');
@@ -128,5 +169,6 @@ async (page) => {
     await next();
   }
   log.push('Ôn tập nhanh kinds: ' + kinds.join(',') + ' | ' + (await page.getByRole('heading', { level: 1 }).innerText()));
+  await page.evaluate(() => localStorage.removeItem('tgat-auth'));
   return log.join('\n');
 }

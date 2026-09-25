@@ -6,10 +6,12 @@ import { usePathname } from "next/navigation";
 import { useEffect, useId, useRef, useState } from "react";
 import Icon, { type IconName } from "./Icon";
 import Logo from "./Logo";
+import AccountMenu, { AccountPanel } from "./AccountMenu";
 import { motionOff } from "@/lib/motion";
+import { HOME } from "@/lib/auth-paths";
 
 const NAV: { href: string; label: string; icon: IconName }[] = [
-  { href: "/", label: "Trang chủ", icon: "home" },
+  { href: HOME, label: "Trang chủ", icon: "home" },
   { href: "/chu-de/", label: "Các chủ đề", icon: "topics" },
   { href: "/on-tap/", label: "Ôn tập", icon: "review" },
   { href: "/thu-vien-nhac/", label: "Thư viện nhạc", icon: "music" },
@@ -17,9 +19,7 @@ const NAV: { href: string; label: string; icon: IconName }[] = [
   { href: "/goc-sinh-vien/", label: "Góc sinh viên", icon: "student" },
 ];
 
-function isActive(path: string, href: string) {
-  return href === "/" ? path === "/" : path.startsWith(href);
-}
+const isActive = (path: string, href: string) => path.startsWith(href);
 
 // next/form: goes to /chu-de/?q=… without a page reload (music keeps playing);
 // still a plain GET form when JS is off.
@@ -82,12 +82,12 @@ export default function NavHeader() {
       }}
     >
       <div className="mx-auto flex max-w-7xl items-center gap-4 px-4 py-2">
-        <Link href="/" className="chrome-logo flex shrink-0 items-center gap-2">
+        <Link href={HOME} className="chrome-logo flex shrink-0 items-center gap-2">
           <Logo className="h-12 w-auto" />
           <span className="leading-none">
             <span className="block font-display text-xl font-extrabold text-blue">Thế giới</span>
             <span className="block font-display text-xl font-extrabold text-pink">Âm thanh</span>
-            <span className="mt-0.5 hidden text-[0.7rem] text-muted sm:block">Lắng nghe - Khám phá - Phát triển</span>
+            <span className="mt-0.5 hidden text-[0.7rem] text-muted sm:block lg:hidden xl:block">Lắng nghe - Khám phá - Phát triển</span>
           </span>
         </Link>
 
@@ -122,6 +122,8 @@ export default function NavHeader() {
         <Link href="/gioi-thieu/" className={`chrome-hop border-2 border-white bg-pink-soft text-pink-dark shadow ${ROUND}`} aria-label="Giới thiệu dự án" title="Giới thiệu dự án">
           <Icon name="info" className="size-5" />
         </Link>
+
+        <AccountMenu />
 
         <button
           ref={burger}
@@ -168,6 +170,9 @@ export default function NavHeader() {
               </li>
             ))}
           </ul>
+          <div className="mt-3 animate-fade-down border-t border-line pt-3 [animation-duration:.4s]" style={{ "--i": NAV.length + 2, "--stagger": "40ms" } as React.CSSProperties}>
+            <AccountPanel onNavigate={close} />
+          </div>
         </div>
       )}
     </header>

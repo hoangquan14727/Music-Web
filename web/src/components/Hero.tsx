@@ -40,7 +40,10 @@ function Img({ src, srcSet, sizes, className = "" }: { src: string; srcSet?: str
   return <img src={src} srcSet={srcSet} sizes={sizes} alt="" loading="lazy" draggable={false} className={`relative block w-full select-none ${className}`} />;
 }
 
-export default function Hero() {
+type Action = { href: string; label: string };
+
+// cta = the big pink button; secondary = an optional quieter link beside it (landing: "Đăng nhập").
+export default function Hero({ cta = { href: "/chu-de/", label: "Bắt đầu khám phá" }, secondary }: { cta?: Action; secondary?: Action }) {
   return (
     <HeroParallax aria-labelledby="hero-title" className="relative overflow-hidden bg-gradient-to-b from-[#bfe9fb] to-[#e6f8ff]">
       <div className="relative mx-auto flex max-w-[1600px] flex-col lg:block lg:h-[clamp(400px,27.5vw,440px)]">
@@ -121,16 +124,26 @@ export default function Hero() {
           <p className="max-w-md animate-rise-in rounded-2xl bg-white/60 px-3 py-1 text-[clamp(0.95rem,1.25vw,1.15rem)] font-semibold text-ink backdrop-blur-[2px] [animation-delay:200ms]">
             Một không gian học tập và trải nghiệm âm thanh đầy màu sắc dành cho trẻ mầm non và giáo viên.
           </p>
-          {/* Halo breathes around the wrapper; the button itself never loops. */}
-          <span className="halo inline-flex animate-rise-in rounded-full [animation-delay:250ms]">
-            <Link
-              href="/chu-de/"
-              data-kid-target
-              className="shine group inline-flex min-h-16 items-center gap-2 rounded-full bg-pink px-8 font-display text-xl font-bold text-white shadow-lg transition-[translate,scale,background-color] duration-300 ease-bounce hover:-translate-y-0.5 hover:scale-105 hover:bg-pink-dark active:scale-95"
-            >
-              Bắt đầu khám phá <Icon name="arrow-right" className="size-6 group-hover:animate-home-nudge" />
-            </Link>
-          </span>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            {/* Halo breathes around the wrapper; the button itself never loops. */}
+            <span className="halo inline-flex animate-rise-in rounded-full [animation-delay:250ms]">
+              <Link
+                href={cta.href}
+                data-kid-target
+                className="shine group inline-flex min-h-16 items-center gap-2 rounded-full bg-pink px-8 font-display text-xl font-bold text-white shadow-lg transition-[translate,scale,background-color] duration-300 ease-bounce hover:-translate-y-0.5 hover:scale-105 hover:bg-pink-dark active:scale-95"
+              >
+                {cta.label} <Icon name="arrow-right" className="size-6 group-hover:animate-home-nudge" />
+              </Link>
+            </span>
+            {secondary && (
+              <Link
+                href={secondary.href}
+                className="inline-flex min-h-12 animate-rise-in items-center rounded-full border-2 border-blue bg-white/90 px-6 font-display text-lg font-bold text-blue shadow-sm transition-[translate,background-color] duration-300 ease-bounce [animation-delay:320ms] hover:-translate-y-0.5 hover:bg-white"
+              >
+                {secondary.label}
+              </Link>
+            )}
+          </div>
         </div>
 
         {/* Word column on a soft pink cloud (CSS) */}

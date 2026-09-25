@@ -1,6 +1,6 @@
-# Bàn giao — Website “Thế giới Âm thanh” (đợt 1 + đợt 2 + rà soát cuối)
+# Bàn giao — Website “Thế giới Âm thanh” (đợt 1 + đợt 2 + rà soát cuối + đăng nhập)
 
-Ngày: 23/09/2026, cập nhật 24/09/2026 · Hướng dẫn nhanh: `README.md` ở thư mục gốc · Mã nguồn: thư mục `web/` · Ảnh chụp: `docs/screenshots/` (375 / 768 / 1440 px, màn trò chơi ở 1024 px)
+Ngày: 23/09/2026, cập nhật 24/09/2026 và 25/09/2026 (đăng nhập, trang bìa, phiếu bé ngoan) · Hướng dẫn nhanh (kể cả cách cài Supabase): `README.md` ở thư mục gốc · Mã nguồn: thư mục `web/` · Ảnh chụp: `docs/screenshots/` (375 / 768 / 1440 px, màn trò chơi ở 1024 px)
 
 ## 1. Chạy thử
 
@@ -8,18 +8,25 @@ Ngày: 23/09/2026, cập nhật 24/09/2026 · Hướng dẫn nhanh: `README.md` 
 cd web
 npm install
 npm run dev          # xem khi đang sửa: http://localhost:3000
-npm test             # kiểm tra logic trò chơi và tìm kiếm (8 bài test)
+npm test             # logic trò chơi, tìm kiếm và danh sách trang cần đăng nhập (12 bài test)
 npm run build        # xuất site tĩnh ra web/out/ (tự kiểm tra dữ liệu trước khi build)
-npx serve out        # xem bản build; demo được cả khi không có mạng
+npx serve out        # xem bản build; sau lần đăng nhập đầu, demo được cả khi không có mạng
 ```
+
+Cần 2 biến Supabase trong `web/.env.local` (README, mục “Cài Supabase”). Thiếu thì build trên máy chỉ cảnh báo và mọi người đều là khách.
 
 Có thể đưa `web/out/` lên bất kỳ host tĩnh nào (Vercel, Netlify, GitHub Pages ở tên miền gốc).
 
 ## 2. Đã làm
 
+Trang ghi **công khai** thì ai cũng xem được; mọi trang khác (kể cả đường dẫn lạ) cần đăng nhập (mục 2b).
+
 | Trang | Nội dung |
 |---|---|
-| `/` Trang chủ | Banner, 5 chủ đề, 5 âm thanh nổi bật (phát ngay tại chỗ), 4 khu mở rộng, băng khẩu hiệu, footer |
+| `/` Trang bìa (**công khai**) | Giới thiệu ngắn cho người chưa đăng nhập: bên trong có gì, dành cho ai (giáo viên, phụ huynh), 3 bước bắt đầu, an toàn cho bé, nút “Đăng ký miễn phí”. Đã đăng nhập thì tự sang `/trang-chu` |
+| `/dang-nhap`, `/dang-ky` (**công khai**) | Đăng nhập bằng email + mật khẩu (có nút gửi lại email xác nhận khi tài khoản chưa xác nhận). Đăng ký: họ tên, vai trò Giáo viên / Phụ huynh, email, mật khẩu ≥ 8 ký tự, ô xác nhận là người lớn và đồng ý Chính sách bảo mật |
+| `/quen-mat-khau`, `/dat-lai-mat-khau` (**công khai**) | Gửi link đặt lại mật khẩu qua email (luôn hiện cùng một thông báo, không lộ email nào có tài khoản); đặt mật khẩu mới từ link đó hoặc từ “Đổi mật khẩu” trong menu tài khoản |
+| `/trang-chu` Trang chủ ứng dụng | Banner, 5 chủ đề, 5 âm thanh nổi bật (phát ngay tại chỗ), 4 khu mở rộng, băng khẩu hiệu, footer (trước đây nằm ở `/`) |
 | `/chu-de` | 5 chủ đề + ô tìm kiếm luôn hiện (`?q=`): gõ có dấu hay không dấu đều được, bỏ qua từ đệm (“tiếng”, “con”, “cái”, “âm thanh”), tìm theo từ khoá (“động vật”, “phương tiện”, “nhạc cụ”…) và tìm cả bản nhạc trong Thư viện nhạc |
 | `/chu-de/[nhóm]` | Chạm cả thẻ để nghe; tên hiện **sau khi** nghe xong; gợi ý cho cô; nút “Chơi với nhóm này” (nhóm Đặc tính dẫn tới Phân biệt âm thanh) |
 | `/chu-de/dac-tinh-am-thanh` | 5 cặp so sánh: to–nhỏ, nhanh–chậm, cao–thấp, giống, khác |
@@ -32,7 +39,7 @@ Có thể đưa `web/out/` lên bất kỳ host tĩnh nào (Vercel, Netlify, Git
 | `/thu-vien-nhac` | 3 nhóm nhạc. Trình phát dính đáy màn hình: bài trước/sau, tua, lặp lại. Nhạc vẫn phát khi chuyển trang, tự dừng khi có âm thanh khác hoặc khi vào trò chơi |
 | `/goc-giao-vien` | Bộ lọc theo độ tuổi, chủ đề, loại hoạt động (8 gợi ý mẫu), đường dẫn tới Thư viện nhạc và công cụ **Tạo hoạt động** (xem ghi chú dưới bảng) |
 | `/goc-sinh-vien` | Giáo án mẫu “Bé khám phá âm thanh quanh mình”, in được / lưu PDF |
-| `/gioi-thieu` | Định vị dự án, liên hệ, chính sách bảo mật, hỗ trợ, nguồn âm thanh, tài liệu tham khảo (đúng danh sách PDF §15) |
+| `/gioi-thieu` (**công khai**) | Định vị dự án, liên hệ, chính sách bảo mật (tài khoản người lớn, không có dữ liệu của trẻ, cách xin xoá tài khoản), hỗ trợ, nguồn âm thanh, tài liệu tham khảo (đúng danh sách PDF §15) |
 | 404 | Có |
 
 **Tạo hoạt động:** cô chọn nhóm âm thanh và độ tuổi, website ghép sẵn một kịch bản 5 bước theo PDF §6 và in được. Kết quả sinh theo quy tắc cố định từ dữ liệu, không dùng AI.
@@ -46,8 +53,29 @@ Có thể đưa `web/out/` lên bất kỳ host tĩnh nào (Vercel, Netlify, Git
 - Điểm chỉ tính lần chạm **đầu tiên**; chạm nhiều ngón cùng lúc chỉ tính 1 lần.
 - Cô bấm “Câu tiếp theo” để chuyển câu.
 - Màn kết quả luôn động viên, kèm một gợi ý hoạt động thật.
+- **Phiếu bé ngoan** (cả 5 trò chơi): dưới màn kết quả, cô gõ tên bé rồi bấm “In phiếu / Lưu PDF”.
+  - Bản in chỉ có phiếu, 1 trang A4 ngang, giữ màu; để trống tên thì in dòng chấm để ghi tay.
+  - Tên chỉ dùng để in, không lưu vào máy hay gửi đi đâu.
+  - Code: `web/src/components/game/GoodKidCertificate.tsx`.
 - Màn chơi không có menu, chỉ có nút “Thoát” nhỏ, để trẻ không bấm lạc ra ngoài. Bấm Thoát hoặc khoá máy giữa 2 tiếng thì tiếng thứ hai không phát nữa.
 - Ô trả lời của trò Phân biệt chỉ có màu và số chấm, không có hình loa, để trẻ không nhầm với nút nghe lại.
+
+## 2b. Đăng nhập
+
+- **Supabase Auth** (gói `@supabase/auth-js`, chỉ tải khi cần). Web vẫn là site tĩnh. Cách cài: README, mục “Cài Supabase”.
+- **Tài khoản chỉ cho người lớn:** Giáo viên hoặc Phụ huynh. Lưu họ tên, email, vai trò. Trẻ không có tài khoản.
+- **Trang công khai:** `/`, `/gioi-thieu`, 4 trang tài khoản. Danh sách duy nhất nằm ở `web/src/lib/auth-paths.ts`. Trang mới đặt trong `web/src/app/(public)/` thì phải thêm vào danh sách; `npm test` tự quét và báo lỗi nếu lệch.
+- **Cách chặn (ở trình duyệt, 2 lớp):**
+  - script đầu trang chạy trước khi vẽ: khách vào trang cần đăng nhập thì sang `/dang-nhap/?next=…` ngay, không thấy chớp trang; đã đăng nhập mà mở `/` thì sang `/trang-chu`;
+  - `AuthGuard` kiểm tra lại mỗi lần chuyển trang bên trong web;
+  - đăng nhập xong quay về đúng trang định vào; `next` chỉ nhận trang trong web (link lạ hay độc hại thì về `/trang-chu`).
+- **Giới hạn:** chỉ phần giao diện đòi đăng nhập. Trang, ảnh và âm thanh vẫn tải được nếu ai biết đường dẫn trực tiếp (quyết định 10).
+- **Phiên đăng nhập** lưu trong trình duyệt (`localStorage`, khoá `tgat-auth`):
+  - sau lần đăng nhập đầu vẫn dùng được khi mất mạng; mất mạng không bị đăng xuất;
+  - đăng xuất ở tab này thì tab khác cũng đăng xuất.
+- **Menu tài khoản** (vòng tròn chữ cái đầu tên ở header; trên điện thoại nằm trong menu): tên, vai trò, email, “Đổi mật khẩu”, “Đăng xuất”. Đăng xuất thì về trang bìa, bấm Back cũng không vào lại được.
+- **Thiếu 2 biến Supabase:** build trên máy chỉ cảnh báo, form báo “Đăng nhập chưa được cấu hình”; build trên Vercel báo lỗi và web đang chạy giữ bản cũ.
+- Code: `web/src/lib/auth.ts`, `web/src/lib/auth-paths.ts`, `web/src/components/AuthGuard.tsx`, script đầu trang trong `web/src/app/layout.tsx`, các trang trong `web/src/app/(public)/`.
 
 ## 3. Hình ảnh và icon
 
@@ -120,17 +148,21 @@ Toàn bộ hiệu ứng làm bằng CSS và một ít React, không thêm thư v
 
 ## 5. Kiểm thử đã chạy
 
-- **`npm test`: 8/8 đạt.**
+- **`npm test`: 12/12 đạt** (8 bài trò chơi và tìm kiếm trong `tests/quiz.test.ts`, 4 bài đăng nhập trong `tests/auth-paths.test.ts`).
   - Không có 2 âm dễ nhầm trong cùng 1 câu hay cùng 1 bảng nối.
   - Lọc theo nhóm đúng.
   - Đáp án phân biệt đi đúng theo thứ tự phát.
   - Bài trộn không lặp âm.
   - Tìm kiếm: không dấu, bỏ từ đệm, mọi từ phải khớp trong cùng một trường (“động vật” không ra “đồng hồ”), gõ có dấu thì phân biệt “chó” với “chợ”; bỏ dấu kiểu cũ hay kiểu mới (“khoá”/“khóa”) đều được.
+  - Đăng nhập: `next` trỏ ra ngoài web hay độc hại (`//evil.com`, `/\evil.com`, `javascript:`…) hoặc trỏ tới trang công khai thì về `/trang-chu`; trang trong web thì giữ nguyên cả `?` và `#`.
+  - Quét `web/src/app`: mọi trang trong `(public)` đều công khai, mọi trang khác đều cần đăng nhập.
 - **Dữ liệu (`npm run check-data`, chạy tự động trước build):** file tồn tại, id không trùng, nguồn/giấy phép đủ, `dimension`/`answer` của cặp so sánh hợp lệ, cặp to–nhỏ chênh ≥ 8 dB.
 - **Trình duyệt thật (Playwright): chơi hết cả 5 trò chơi.** Kịch bản: `web/tests/e2e-games.mcp.js` (chạy bằng công cụ Playwright MCP, hướng dẫn ở đầu file). Kết quả lần chạy cuối (sau khi thêm hiệu ứng): Nghe – chọn hình 5/6, Đoán 6/6 (4 hình), Nối 8/9. Câu hỏi đổi trong hiệu ứng chuyển cảnh, nên kịch bản chờ câu cũ rời khỏi trang rồi mới đọc câu mới.
   - Chọn sai không tính điểm; bấm nhiều lần không tính 2 lần.
   - Đoán ở mức 5–6 tuổi hiện đúng 4 hình.
   - Nối: chạm hình trước khi chạm loa thì có nhắc.
+  - Từ khi có đăng nhập, kịch bản tạo sẵn một phiên giả trong `tgat-auth` nên chạy không cần mạng hay tài khoản thật.
+- **Kịch bản đăng nhập:** `web/tests/e2e-auth.mcp.js` (khách bị chuyển sang trang đăng nhập, `/` là trang bìa, `next` độc hại bị chặn, đăng xuất rồi bấm Back không vào lại được).
 - **Trình phát nhạc:** vẫn phát khi chuyển trang và khi tìm kiếm từ header, dừng khi có hiệu ứng âm thanh. Trên điện thoại, nút điều khiển xuống hàng riêng.
 - **Bộ lọc Góc giáo viên:** 8 → 6 → 2 gợi ý. “Tạo hoạt động” đổi được bộ âm thanh.
 - **Bố cục:** mọi vùng chạm của trẻ ≥ 64 px; không tràn ngang ở 375 px; Tab/Enter dùng được ở khu người lớn; banner đủ nút ở 1024 px (iPad ngang); ở 1024–1279 px header có nút kính lúp dẫn tới ô tìm kiếm.
@@ -138,7 +170,8 @@ Toàn bộ hiệu ứng làm bằng CSS và một ít React, không thêm thư v
 - **Cần người thật kiểm tra:**
   - iPad và máy tính bảng Android thật: âm thanh, cảm ứng, công tắc im lặng iPhone;
   - nếu có iPad chạy iPadOS dưới 16.4 thì phải hạ Tailwind xuống v3.4;
-  - thử với 3–5 người dùng theo PDF §13.
+  - thử với 3–5 người dùng theo PDF §13;
+  - với project Supabase thật: đăng ký, đăng nhập, sai mật khẩu báo lỗi tiếng Việt, đăng xuất ở tab này thì tab kia cũng đăng xuất; khi đã có SMTP thì thử “Quên mật khẩu” và mở link xác nhận trên máy khác.
 
 ## 6. Giả định đã tự quyết — cần nhóm xác nhận
 
@@ -146,9 +179,9 @@ Toàn bộ hiệu ứng làm bằng CSS và một ít React, không thêm thư v
    - nút hồng #D6336C;
    - chữ trong bóng thoại màu hồng đậm;
    - footer #3A6A9A.
-2. Bỏ icon Facebook/YouTube ở footer. Icon avatar thành nút “Giới thiệu”, vì không có đăng nhập.
+2. Bỏ icon Facebook/YouTube ở footer. Icon avatar ở header nay là **menu tài khoản** (vòng tròn chữ cái đầu tên: tên, vai trò, email, “Đổi mật khẩu”, “Đăng xuất”).
 3. Chữ thẻ Góc sinh viên: “Giáo án mẫu, tài liệu thực hành / Xem tài liệu”, thay cho “Tham gia ngay”.
-4. Không lưu điểm “Lần trước con được…”, vì cả lớp dùng chung máy.
+4. Không lưu điểm “Lần trước con được…”, vì cả lớp dùng chung máy. Tên bé gõ trên Phiếu bé ngoan cũng không lưu: in xong là mất.
 5. Sau khi trẻ chọn đúng, **chờ cô bấm** “Câu tiếp theo”, không tự chuyển.
 6. Số câu mỗi lượt:
    - Nghe – chọn hình / Đoán: 6 câu;
@@ -159,6 +192,7 @@ Toàn bộ hiệu ứng làm bằng CSS và một ít React, không thêm thư v
 7. Mọi nội dung sư phạm do AI viết (gợi ý hoạt động, giáo án, câu hỏi) đều gắn nhãn “Nội dung mẫu – cần nhóm GDMN duyệt”.
 8. Tagline dự phòng: “Bé cùng khám phá thế giới qua âm thanh!” (PDF) và “Lắng nghe – Khám phá – Học mà chơi” (brief).
 9. Hiệu ứng **không theo** cài đặt “Giảm chuyển động” của máy (nhóm yêu cầu: máy trường thường tắt sẵn nên không thấy hiệu ứng nào). Thay bằng nút “Tắt hiệu ứng” (footer, màn bắt đầu/kết quả trò chơi, trang 404), nên vẫn đạt WCAG 2.2.2 (dừng/tạm dừng nội dung chuyển động).
+10. **Chặn đăng nhập ở trình duyệt** (nhóm đã chọn): web vẫn là site tĩnh, host miễn phí trên Vercel, không cần máy chủ riêng. Đổi lại, trang, ảnh và âm thanh vẫn tải được nếu biết đường dẫn trực tiếp; nội dung không có gì bí mật nên nhóm chấp nhận. Muốn chặn cả file thì phải có máy chủ kiểm tra đăng nhập ở từng lần tải.
 
 ## 7. Lighthouse và công cụ
 
@@ -166,12 +200,16 @@ Toàn bộ hiệu ứng làm bằng CSS và một ít React, không thêm thư v
 
 | Trang | Performance | Accessibility | Best Practices | SEO |
 |---|---|---|---|---|
-| `/` | 87 (88) | 100 | 100 | 100 |
+| `/` (nay là `/trang-chu`) | 87 (88) | 100 | 100 | 100 |
 | `/chu-de/tu-nhien` | 88 (88) | 100 | 100 | 100 |
 | `/on-tap` | 90 (90) | 100 | 100 | 100 |
 | `/on-tap/noi-am-thanh-hinh-anh` | 92 (92) | 100 | 100 | 100 |
 | `/thu-vien-nhac` | 89 (92) | 100 | 100 | 100 |
 | `/goc-giao-vien` | 93 (93) | 100 | 100 | 100 |
+
+**Đo từ khi có đăng nhập:**
+- Lighthouse CLI chỉ vào được trang công khai: đo `/` (trang bìa) và `/dang-nhap`. Mục tiêu không thấp hơn 87 / 100 / 100 / 100.
+- Trang cần đăng nhập: CLI sẽ bị chuyển sang trang đăng nhập. Đo bằng tab Lighthouse trong DevTools của Chrome, ở tab đã đăng nhập (chế độ Mobile).
 
 - Lần đo đầu sau khi có ảnh AI: trang chủ chỉ đạt 76 (LCP mô phỏng 7,4 giây, tải 1,5 MB). Đã sửa:
   - xuất lại ảnh chủ đề, CTA và ảnh nổi bật đúng cỡ hiển thị;
@@ -195,7 +233,9 @@ Toàn bộ hiệu ứng làm bằng CSS và một ít React, không thêm thư v
 
 ## 8. Nhóm cần bổ sung
 
-- **Tên nhóm, thành viên, đơn vị và thông tin liên hệ:** trang `/gioi-thieu` đang để ô trống. Điền vào mục “Nhóm thực hiện” và “Liên hệ” trong `web/src/app/(site)/gioi-thieu/page.tsx`.
+- **Tên nhóm, thành viên, đơn vị và thông tin liên hệ:** trang `/gioi-thieu` đang để ô trống. Điền vào mục “Nhóm thực hiện” và “Liên hệ” trong `web/src/app/(public)/gioi-thieu/page.tsx`. Mục Liên hệ cần có **email nhận yêu cầu xoá tài khoản** (Chính sách bảo mật hướng người dùng tới đó).
+- **Project Supabase** (README, mục “Cài Supabase”): tạo project, đặt 2 biến `NEXT_PUBLIC_SUPABASE_URL` và `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` trên Vercel (Production + Preview) **trước khi push**, và vào “Restore” khi project bị tạm dừng.
+- **SMTP miễn phí** (Gmail hoặc Brevo) để giáo viên, phụ huynh nhận được email xác nhận và email “Quên mật khẩu”; có SMTP rồi mới bật “Confirm email”.
 - Duyệt các âm thanh ghi ở mục 4 (nên thay bằng bản ghi ở Việt Nam nếu có) và bổ sung nhạc kể chuyện, nhạc thiếu nhi khi đã xin phép.
 - Duyệt các nội dung có nhãn “Nội dung mẫu – cần nhóm GDMN duyệt”.
 - Thử trên thiết bị thật và với người dùng thật (mục 5).

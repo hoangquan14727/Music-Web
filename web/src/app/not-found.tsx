@@ -1,5 +1,6 @@
 import Link from "next/link";
 import MotionToggle from "@/components/MotionToggle";
+import { HOME } from "@/lib/auth-paths";
 
 // "?" bubbles around the puzzled mascot: [position, colour, float phase].
 const QUESTIONS: [string, string, number][] = [
@@ -31,7 +32,7 @@ export default function NotFound() {
       <h1 className="animate-rise-in text-4xl font-bold text-navy [--i:1]">Ôi, không tìm thấy trang này!</h1>
       <p className="animate-fade-up text-lg text-muted [--i:2]">Mình cùng quay lại nghe âm thanh nhé.</p>
       <div className="flex animate-fade-up flex-wrap justify-center gap-3 [--i:2]">
-        <Link href="/" className={`shine bg-pink ${BUTTON}`}>
+        <Link href={HOME} className={`shine bg-pink ${BUTTON}`}>
           Về trang chủ
         </Link>
         <Link href="/chu-de/" className={`bg-blue ${BUTTON}`}>
