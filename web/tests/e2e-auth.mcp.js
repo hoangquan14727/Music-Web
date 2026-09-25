@@ -184,49 +184,18 @@ async (page) => {
   };
   const LINK = '/dat-lai-mat-khau/?token_hash=abc&type=recovery';
 
+  // A link is used up as soon as the page opens; the real Supabase refuses this fake token.
   await go(r, LINK, '/dat-lai-mat-khau/');
-  check('reset link: new-password form shown', await resetForm(r));
+  let said = await alertText(r);
   check('reset link: token gone from the address bar', r.url() === BASE + '/dat-lai-mat-khau/', r.url());
+  check('reset link: no token in the history entry', !(await r.evaluate(() => location.href + JSON.stringify(history.state))).includes('token_hash'));
+  check('bad link: checked on open, Vietnamese expired/used message', /^(Link đã hết hạn hoặc đã được dùng|Không kết nối được máy chủ)/.test(said), said);
+  check('bad link: "Gửi lại link" -> /quen-mat-khau/', /Không kết nối/.test(said) || (await r.getByRole('link', { name: 'Gửi lại link' }).getAttribute('href')) === '/quen-mat-khau/');
   check('reset link: guest header ("Đăng nhập" + "Đăng ký", no "Vào học")', await guestHeader());
   check('reset link: nothing stored', (await stored(r)) === null);
   await r.reload();
-  let said = await alertText(r);
+  said = await alertText(r);
   check('reset link: a reload finds no token', /không còn dùng được/.test(said), said);
-  await go(r, LINK, '/dat-lai-mat-khau/');
-  await resetForm(r);
-  await hdr.locator('a.chrome-logo').click();
-  await r.waitForURL((x) => x.pathname === '/', { timeout: 8000 }).catch(() => {});
-  check('reset link: leaving by the logo stores nothing', path(r) === '/' && (await stored(r)) === null, r.url());
-  await r.goBack().catch(() => {});
-  await r.waitForURL((x) => x.pathname === '/dat-lai-mat-khau/', { timeout: 8000 }).catch(() => {});
-  said = await alertText(r);
-  check('reset link: Back to it finds no token, nothing stored', /không còn dùng được/.test(said) && !(await r.getByLabel('Nhập lại mật khẩu', { exact: true }).count()) && (await stored(r)) === null, `${r.url()} ${said}`);
-  // Off to another site and Back (from the Back/Forward cache when the browser keeps the page).
-  await go(r, LINK, '/dat-lai-mat-khau/');
-  await resetForm(r);
-  check('reset link: no token in the history entry', !(await r.evaluate(() => location.href + JSON.stringify(history.state))).includes('token_hash'));
-  await r.evaluate(() => (window.__e2eKept = 1));
-  await r.goto(BASE.replace('127.0.0.1', 'localhost') + '/gioi-thieu/').catch(() => {});
-  await r.goBack().catch(() => {});
-  await r.waitForURL((x) => x.pathname === '/dat-lai-mat-khau/', { timeout: 8000 }).catch(() => {});
-  const kept = await r.evaluate(() => window.__e2eKept === 1).catch(() => false);
-  said = await alertText(r);
-  check(`reset link: Back from another site finds no token (${kept ? 'Back/Forward cache' : 'reloaded'})`, /không còn dùng được/.test(said) && !(await r.getByLabel('Nhập lại mật khẩu', { exact: true }).count()) && (await stored(r)) === null, `${r.url()} ${said}`);
-  // The cache keeps the page as it was left: pagehide must drop the token (fired by hand here).
-  await go(r, LINK, '/dat-lai-mat-khau/');
-  await resetForm(r);
-  await r.evaluate(() => dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true })));
-  said = await alertText(r);
-  check('reset link: pagehide drops the token', /không còn dùng được/.test(said) && !(await r.getByLabel('Nhập lại mật khẩu', { exact: true }).count()), said);
-
-  // The real Supabase verify endpoint answers a bad token_hash with an error.
-  await go(r, LINK, '/dat-lai-mat-khau/');
-  await resetForm(r);
-  await save(r, 'Matkhau-moi-123');
-  said = await alertText(r);
-  check('bad token: Vietnamese expired/used message', /^(Link đã hết hạn hoặc đã được dùng|Không kết nối được máy chủ)/.test(said), said);
-  check('bad token: "Gửi lại link" -> /quen-mat-khau/', /Không kết nối/.test(said) || (await r.getByRole('link', { name: 'Gửi lại link' }).getAttribute('href')) === '/quen-mat-khau/');
-  check('bad token: nothing stored', (await stored(r)) === null);
 
   // Old implicit links (#access_token…&type=recovery) are refused on any page.
   for (const from of ['/', '/dat-lai-mat-khau/']) {
@@ -265,12 +234,35 @@ async (page) => {
     if (at.startsWith('/token?grant_type=password')) return json(session(PW));
     return route.fulfill({ status: 500, headers: { ...cors, 'content-type': 'application/json' }, body: '{"code":"unexpected"}' });
   });
-  await go(m, LINK, '/dat-lai-mat-khau/');
+  await go(m, '/gioi-thieu/');
   [REC, PW] = await m.evaluate(() => {
     const b64 = (o) => btoa(JSON.stringify(o)).replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
     const jwt = (sid) => `${b64({ alg: 'none', typ: 'JWT' })}.${b64({ sub: 'e2e-r', aud: 'authenticated', role: 'authenticated', email: 'reset@example.com', exp: 4102444800, session_id: sid })}.`;
     return [jwt('recovery'), jwt('password')];
   });
+  // A valid link: the form shows only after the check, and nothing is stored yet.
+  await go(m, LINK, '/dat-lai-mat-khau/');
+  check('valid link: form shown after the check on open', await resetForm(m));
+  check('valid link: nothing stored before saving', (await stored(m)) === null);
+  // Leaving drops the link: Back finds nothing to use.
+  await m.locator('header a.chrome-logo').click();
+  await m.waitForURL((x) => x.pathname === '/', { timeout: 8000 }).catch(() => {});
+  check('valid link: leaving by the logo stores nothing', path(m) === '/' && (await stored(m)) === null, m.url());
+  await m.goBack().catch(() => {});
+  await m.waitForURL((x) => x.pathname === '/dat-lai-mat-khau/', { timeout: 8000 }).catch(() => {});
+  said = await alertText(m);
+  check('valid link: Back to it shows no form', /không còn dùng được/.test(said) && !(await m.getByLabel('Nhập lại mật khẩu', { exact: true }).count()), `${m.url()} ${said}`);
+  // The Back/Forward cache keeps a page as it was left: pagehide must drop the link's session.
+  await go(m, LINK, '/dat-lai-mat-khau/');
+  await resetForm(m);
+  await m.evaluate(() => dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true })));
+  said = await alertText(m);
+  check('valid link: pagehide drops it', /không còn dùng được/.test(said) && !(await m.getByLabel('Nhập lại mật khẩu', { exact: true }).count()), said);
+  // Full success path.
+  await go(m, '/gioi-thieu/');
+  await m.evaluate(() => (window.__writes = []));
+  calls.length = 0;
+  await go(m, LINK, '/dat-lai-mat-khau/');
   await resetForm(m);
   await save(m, 'Matkhau-moi-123');
   await m.waitForURL((x) => x.pathname === '/trang-chu/', { timeout: 15000 }).catch(() => {});
@@ -291,6 +283,10 @@ async (page) => {
   await seed(r);
   await go(r, '/trang-chu/');
   check('normal session: /trang-chu/ opens', path(r) === '/trang-chu/', r.url());
+  await go(r, '/dat-lai-mat-khau/');
+  said = await alertText(r);
+  check('normal session: /dat-lai-mat-khau/ not from the menu shows no form', /không còn dùng được/.test(said) && !(await r.getByLabel('Nhập lại mật khẩu', { exact: true }).count()), said);
+  await go(r, '/trang-chu/');
   await accountMenu(r);
   await r.locator('details[open]').getByRole('link', { name: 'Đổi mật khẩu' }).click();
   await r.waitForURL((x) => x.pathname === '/dat-lai-mat-khau/', { timeout: 8000 }).catch(() => {});

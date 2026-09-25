@@ -27,6 +27,8 @@ export const viewport: Viewport = {
 };
 
 // Before first paint:
+// - a reset link (?token_hash…&type=recovery): the token moves to window.__tgatReset and
+//   leaves the address bar before the page paints (ResetForm uses it up at once);
 // - an old-style reset link (#access_token…&type=recovery, on any page): its token leaves
 //   the address bar before any script can read it and the tab lands on RESET_PATH?link=cu,
 //   which refuses it. Reset links never make a stored session (see ResetForm);
@@ -47,6 +49,8 @@ export const viewport: Viewport = {
 //   (parsed, fonts, hero image decoded, window load), shown ≥ 0.95 s, done by ~2.4 s.
 //   A tap, key, wheel or swipe skips; the click that follows a skip tap is swallowed.
 const HEAD_SCRIPT = `(function(){var d=document.documentElement;
+if((location.pathname.slice(-1)==="/"?location.pathname:location.pathname+"/")===${JSON.stringify(RESET_PATH)}){var k=/[?&]token_hash=([^&#]+)/.exec(location.search);
+if(k&&/[?&]type=recovery/.test(location.search)){try{window.__tgatReset=decodeURIComponent(k[1]);history.replaceState(null,"",${JSON.stringify(RESET_PATH)})}catch(e){}}}
 function gate(){var p=location.pathname,s,to="",r=${JSON.stringify(RESET_PATH)},o=r+"?link=cu";p=p.slice(-1)==="/"?p:p+"/";
 if(/type=recovery/.test(location.hash)){try{history.replaceState(null,"",p===r?o:location.pathname+location.search)}catch(e){}if(p!==r)to=o}
 else{try{s=JSON.parse(localStorage.getItem(${JSON.stringify(AUTH_KEY)}))}catch(e){}

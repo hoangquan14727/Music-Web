@@ -404,69 +404,98 @@ export function ForgotForm() {
 const OLD_LINK = "Link này đã cũ hoặc hết hạn. Bạn hãy gửi lại link mới.";
 const NO_LINK = "Link đặt lại mật khẩu không còn dùng được. Bạn hãy gửi lại link mới.";
 
-// From the reset email (?token_hash=…&type=recovery) or "Đổi mật khẩu" when logged in.
-// A link's session is never stored: the token only lives in this component (the address
-// bar loses it at once) and is checked on save, in a client that keeps its session in
-// memory (resetAuth). Password changed, that session is revoked and a normal login with
-// the new password is the one stored. Old #access_token links are refused (app/layout).
+// From the reset email (?token_hash=…&type=recovery) or the account menu (?doi=1, logged in).
+// The head script (app/layout) moves a link's token out of the address bar before the page
+// paints. The link is used up as soon as the page opens, in a client that keeps its session
+// in memory only (resetAuth): a copy left in the browser history is dead, and leaving or
+// closing the page drops that session. Password saved, the link's session is revoked and a
+// normal login with the new password is the one stored. Old #access_token links are refused.
+type LinkCheck = { client: GoTrueClient | null; error: string; retry?: boolean };
+let linkCheck: Promise<LinkCheck> | null = null; // one check per page load (dev runs effects twice)
+function checkLink(token: string) {
+  return (linkCheck ??= resetAuth()
+    .then(async (c) => {
+      const { data, error } = await c.verifyOtp({ token_hash: token, type: "recovery" });
+      if (!error && data.session) return { client: c, error: "" };
+      const retry = !!error && (!error.status || error.status === 429 || error.status >= 500); // offline, busy
+      return { client: null, error: retry ? authMessage(error) : authMessage({ code: "otp_expired" }), retry };
+    })
+    .catch((e) => ({ client: null, error: authMessage(e), retry: true })));
+}
+
 export function ResetForm() {
   const router = useRouter();
   const session = useSession();
   const { msg, setMsg, pending, run } = useAuthAction();
   const [show, setShow] = useState(false);
-  // null until the URL is read; "email": a link's token is held; "done": changed, log in
-  // again; anything else is what's wrong with the link ("" = no link came with the visit).
+  // null: reading the link; "email": the link's session is ready; "doi": logged in, from the
+  // account menu; "done": changed, log in again; anything else: what's wrong with the link.
   const [link, setLink] = useState<string | null>(null);
+  const [retry, setRetry] = useState(false);
   const token = useRef<string | null>(null);
-  const reset = useRef<GoTrueClient>(null); // the link's client once verified: a retry doesn't verify again
+  const reset = useRef<GoTrueClient | null>(null);
+
+  const check = (t: string) =>
+    checkLink(t).then((r) => {
+      if (!token.current) return; // the page was left meanwhile
+      reset.current = r.client;
+      setRetry(!!r.retry);
+      setLink(r.client ? "email" : r.error);
+    });
 
   useEffect(() => {
+    const w = window as { __tgatReset?: string };
+    token.current ??= w.__tgatReset ?? null;
+    delete w.__tgatReset;
     const q = new URLSearchParams(location.search);
-    if (q.get("type") === "recovery" && q.get("token_hash")) {
-      token.current = q.get("token_hash");
-      history.replaceState(history.state, "", location.pathname); // a reload or Back finds no token (the state is Next's)
-    }
-    setLink(token.current ? "email" : q.get("link") === "cu" ? OLD_LINK : linkError());
-    // Leaving the page drops the link: a tab restored from the Back/Forward cache doesn't get it back.
+    if (token.current) check(token.current);
+    else setLink(q.get("doi") === "1" ? "doi" : q.get("link") === "cu" ? OLD_LINK : linkError() || NO_LINK);
+    // Leaving the page ends the link's session (also for a tab kept in the Back/Forward cache).
     const drop = () => {
-      token.current = reset.current = null;
-      setLink((l) => (l === "email" ? "" : l));
+      reset.current?.signOut({ scope: "local" }).catch(() => {});
+      token.current = reset.current = linkCheck = null;
+      setRetry(false);
+      setLink((l) => (l === "email" ? NO_LINK : l));
     };
     addEventListener("pagehide", drop);
     return () => removeEventListener("pagehide", drop);
   }, []);
 
+  const again = () => {
+    linkCheck = null;
+    setLink(null);
+    if (token.current) check(token.current);
+  };
+
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const pw = password(new FormData(e.currentTarget));
     run(async (auth) => {
-      if (link !== "email") {
+      if (link === "doi") {
         const { error } = await auth.updateUser({ password: pw });
         if (error) throw error;
       } else {
-        if (!reset.current) {
-          const c = await resetAuth();
-          const { data, error } = await c.verifyOtp({ token_hash: token.current!, type: "recovery" });
-          if (error && (!error.status || error.status === 429 || error.status >= 500)) throw error; // offline, busy: try again
-          if (error || !data.session) return setLink(authMessage({ code: "otp_expired" }));
-          reset.current = c;
-        }
-        const { data, error } = await reset.current.updateUser({ password: pw });
+        const c = reset.current;
+        if (!c) return setLink(NO_LINK);
+        const { data, error } = await c.updateUser({ password: pw });
         if (error) throw error; // e.g. too weak: fix it and save again
-        await reset.current.signOut({ scope: "local" }).catch(() => {}); // the link's session ends here
-        const { error: again } = await auth.signInWithPassword({ email: data.user.email ?? "", password: pw });
-        if (again) return setLink("done");
+        await c.signOut({ scope: "local" }).catch(() => {}); // the link's session ends here
+        token.current = reset.current = linkCheck = null;
+        const { error: failed } = await auth.signInWithPassword({ email: data.user.email ?? "", password: pw });
+        if (failed) return setLink("done");
       }
       setMsg({ text: "Đã lưu mật khẩu mới. Đang chuyển vào trang học…", ok: true });
       router.replace(HOME);
     });
   };
 
-  const error = link === "email" ? "" : link || (session === null && configured ? NO_LINK : ""); // not configured: the form says so
+  // "doi" needs a logged-in session; everything else that isn't a ready link is an error.
+  const form = link === "email" || (link === "doi" && !!session);
+  const error = link === "doi" ? (session === null ? NO_LINK : "") : form || link === null || link === "done" ? "" : link;
 
   return (
     <AuthCard title="Đặt mật khẩu mới" lead="Chọn mật khẩu mới cho tài khoản của bạn." mascot="listening" side="Một mật khẩu mới, thật dễ nhớ nhé!">
-      {link === null || session === undefined ? (
+      {link === null || (link === "doi" && session === undefined) ? (
         <p role="status" className="font-semibold text-ink">
           Đang kiểm tra link…
         </p>
@@ -477,22 +506,27 @@ export function ResetForm() {
             Đăng nhập
           </Link>
         </Done>
-      ) : !error ? (
+      ) : form ? (
         <form onSubmit={onSubmit} onInput={(e) => matchPasswords(e.currentTarget)} className="space-y-4">
-          {link === "email" && <p className="text-muted">Link trong email được kiểm tra khi bạn bấm “Lưu mật khẩu mới”.</p>}
           <NewPasswords show={show} />
           <ShowPassword show={show} setShow={setShow} />
           <Alert msg={msg} />
           <Submit pending={pending}>Lưu mật khẩu mới</Submit>
         </form>
       ) : (
-        <div className="space-y-4">
+        <div ref={focus} tabIndex={-1} className="space-y-4">
           <p role="alert" className="font-semibold text-pink-ink">
             {error}
           </p>
-          <Link href="/quen-mat-khau/" className={GHOST}>
-            Gửi lại link <Icon name="arrow-right" className="size-5" />
-          </Link>
+          {retry ? (
+            <button type="button" onClick={again} className={GHOST}>
+              Thử lại
+            </button>
+          ) : (
+            <Link href="/quen-mat-khau/" className={GHOST}>
+              Gửi lại link <Icon name="arrow-right" className="size-5" />
+            </Link>
+          )}
         </div>
       )}
     </AuthCard>

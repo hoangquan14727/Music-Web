@@ -30,7 +30,7 @@ export function AccountPanel({ onNavigate }: { onNavigate?: () => void }) {
         </div>
       )}
       <div className="grid grid-cols-2 gap-2">
-        <Link href="/dat-lai-mat-khau/" onClick={onNavigate} className={`bg-page text-ink hover:bg-sky/50 ${ITEM}`}>
+        <Link href="/dat-lai-mat-khau/?doi=1" onClick={onNavigate} className={`bg-page text-ink hover:bg-sky/50 ${ITEM}`}>
           Đổi mật khẩu
         </Link>
         <button

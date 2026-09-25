@@ -75,9 +75,11 @@ Trang ghi **công khai** thì ai cũng xem được; mọi trang khác (kể c�
   - đăng xuất ở tab này thì tab khác cũng đăng xuất.
 - **Link “Quên mật khẩu”:**
   - link trong email trỏ về web (`/dat-lai-mat-khau/?token_hash=…`), không qua `supabase.co` (ít vào Spam hơn);
-  - mở link chưa tạo phiên đăng nhập nào: mã trong link rời thanh địa chỉ ngay, chỉ nằm trong trang đang mở; header vẫn là “Đăng nhập” / “Đăng ký”;
-  - link chỉ được kiểm tra lúc bấm “Lưu mật khẩu mới”. Phiên của link chỉ nằm trong bộ nhớ trang, không bao giờ lưu vào trình duyệt, và bị huỷ ngay sau khi đổi mật khẩu; web đăng nhập bằng mật khẩu mới rồi vào `/trang-chu`;
-  - rời trang, tải lại, Back/Forward, đóng tab: không còn gì để dùng lại (máy dùng chung an toàn), trang báo link không còn dùng được;
+  - mã trong link rời thanh địa chỉ trước khi trang hiện, và link được dùng ngay khi mở: bản link còn trong lịch sử trình duyệt đã vô hiệu;
+  - mở link không đăng nhập: phiên của link chỉ nằm trong bộ nhớ trang, không lưu vào trình duyệt; header vẫn là “Đăng nhập” / “Đăng ký”;
+  - bấm “Lưu mật khẩu mới”: đổi mật khẩu, huỷ phiên của link, rồi đăng nhập bằng mật khẩu mới và vào `/trang-chu`;
+  - rời trang, tải lại, Back/Forward, đóng tab: phiên của link mất theo trang, không còn gì để dùng lại (máy dùng chung an toàn);
+  - đang đăng nhập mà muốn đổi mật khẩu: vào menu tài khoản → “Đổi mật khẩu” (`/dat-lai-mat-khau/?doi=1`); mở thẳng `/dat-lai-mat-khau/` không hiện form, để không đổi nhầm tài khoản đang đăng nhập trên máy;
   - link kiểu cũ (`#access_token=…`, email gửi trước khi đổi mẫu) bị từ chối ở mọi trang: chuyển sang `/dat-lai-mat-khau/?link=cu` với lời nhắn gửi lại link mới.
 - **Menu tài khoản** (vòng tròn chữ cái đầu tên ở header; trên điện thoại nằm trong menu): tên, vai trò, email, “Đổi mật khẩu”, “Đăng xuất”. Đăng xuất thì về trang bìa, bấm Back cũng không vào lại được.
 - **Thiếu 2 biến Supabase:** build trên máy chỉ cảnh báo, form báo “Đăng nhập chưa được cấu hình”; build trên Vercel báo lỗi và web đang chạy giữ bản cũ.
