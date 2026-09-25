@@ -6,7 +6,7 @@ export type IconName =
   | "home" | "topics" | "review" | "music" | "teacher" | "student" | "search" | "menu"
   | "close" | "info" | "arrow-right" | "arrow-left" | "chevron-right" | "play" | "pause"
   | "volume" | "replay" | "headphones" | "ear" | "gamepad" | "soundwave" | "star" | "heart"
-  | "lightbulb" | "printer" | "clock" | "users" | "check" | "prev" | "next" | "repeat" | "book" | "logout";
+  | "lightbulb" | "printer" | "clock" | "users" | "check" | "prev" | "next" | "repeat" | "book" | "logout" | "mail" | "copy";
 
 const tint = { fill: "currentColor", fillOpacity: 0.24 } as const;
 const solid = { fill: "currentColor", stroke: "none" } as const;
@@ -166,6 +166,18 @@ const ICONS: Record<IconName, ReactNode> = {
     <>
       <path {...tint} d="M11 4.5H6.9A1.9 1.9 0 0 0 5 6.4v11.2a1.9 1.9 0 0 0 1.9 1.9H11" />
       <path d="M10.5 12h9.5m-3.4-3.6L20 12l-3.4 3.6" />
+    </>
+  ),
+  mail: (
+    <>
+      <rect {...tint} x="3.5" y="5.5" width="17" height="13" rx="2.4" />
+      <path d="m4.3 7.2 7.7 5.8 7.7-5.8" />
+    </>
+  ),
+  copy: (
+    <>
+      <rect {...tint} x="8.5" y="8.5" width="11.5" height="11.5" rx="2.2" />
+      <path d="M15.5 8.5V6.2A2.2 2.2 0 0 0 13.3 4H6.2A2.2 2.2 0 0 0 4 6.2v7.1a2.2 2.2 0 0 0 2.2 2.2h2.3" />
     </>
   ),
 };

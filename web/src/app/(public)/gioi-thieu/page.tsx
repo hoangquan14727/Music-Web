@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { music, sounds } from "@/lib/data";
+import Icon from "@/components/Icon";
+import CopyButton from "@/components/CopyButton";
 
 export const metadata: Metadata = { title: "Giới thiệu" };
 
@@ -55,20 +57,64 @@ export default function AboutPage() {
         </p>
       </header>
 
-      <section aria-labelledby="nguoi-thuc-hien" className="space-y-2">
-        <H2 id="nguoi-thuc-hien">Người thực hiện</H2>
-        <p className="reveal rounded-2xl bg-white p-4 font-semibold text-ink shadow-sm">Lò Hà Uyên Trân</p>
-      </section>
+      {/* Who made it + how to reach her: two bright cards side by side on wide screens. */}
+      <div className="grid gap-8 md:grid-cols-2">
+        <section aria-labelledby="nguoi-thuc-hien" className="flex flex-col gap-3">
+          <H2 id="nguoi-thuc-hien">Người thực hiện</H2>
+          <div className="reveal relative flex flex-1 flex-col justify-center overflow-hidden rounded-card border-4 border-white bg-gradient-to-br from-[#dff1fe] via-[#fbfcfe] to-[#fde7f0] p-5 shadow-md">
+            <span aria-hidden className="pointer-events-none absolute -right-6 -top-6 size-24 rounded-full bg-pink/10" />
+            <Icon name="music" className="pointer-events-none absolute right-5 top-4 size-6 animate-twinkle text-pink" />
+            <Icon name="star" className="pointer-events-none absolute bottom-4 right-6 hidden size-5 animate-twinkle text-[#f59e0b] [--i:2] sm:block" />
+            <div className="relative flex items-center gap-4">
+              <span className="grid size-20 shrink-0 place-items-center rounded-full bg-white shadow-md ring-4 ring-[#bfe0fa]">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/images/stickers/student.webp" alt="" className="size-16 animate-float [--float-y:-4px]" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-pink-dark">Thực hiện dự án</p>
+                <p className="font-display text-2xl font-extrabold leading-tight text-navy md:text-3xl">Lò Hà Uyên Trân</p>
+                <p className="mt-1 text-sm text-muted">“Thế giới Âm thanh” — học liệu âm thanh cho trẻ mầm non</p>
+              </div>
+            </div>
+          </div>
+        </section>
 
-      <section aria-labelledby="lien-he" className="space-y-2">
-        <H2 id="lien-he">Liên hệ</H2>
-        <p className="reveal break-all rounded-2xl bg-white p-4 text-ink shadow-sm">
-          Email:{" "}
-          <a href="mailto:tranlhu.k66gdmn-d@utb.edu.vn" className="font-semibold text-blue underline">
-            tranlhu.k66gdmn-d@utb.edu.vn
-          </a>
-        </p>
-      </section>
+        <section aria-labelledby="lien-he" className="flex flex-col gap-3">
+          <H2 id="lien-he">Liên hệ</H2>
+          <div className="reveal relative flex-1 overflow-hidden rounded-card border-4 border-white bg-gradient-to-br from-[#fde7f0] via-[#fbfcfe] to-[#e3f5ee] p-5 shadow-md">
+            <span aria-hidden className="pointer-events-none absolute -bottom-8 -right-8 size-28 rounded-full bg-blue/10" />
+            <div className="relative flex items-center gap-4">
+              <span className="grid size-14 shrink-0 -rotate-6 place-items-center rounded-2xl bg-pink text-white shadow-md">
+                <Icon name="mail" className="size-8" />
+              </span>
+              <div className="min-w-0">
+                <p className="text-xs font-bold uppercase tracking-[0.18em] text-blue">Email</p>
+                <a
+                  href="mailto:tranlhu.k66gdmn-d@utb.edu.vn"
+                  className="font-display text-lg font-bold text-navy underline decoration-pink/40 decoration-2 underline-offset-4 [overflow-wrap:anywhere] hover:decoration-pink md:text-xl"
+                >
+                  tranlhu.k66gdmn-d@
+                  <wbr />
+                  utb.edu.vn
+                </a>
+              </div>
+            </div>
+            <p className="relative mt-3 text-sm text-muted">Góp ý nội dung, báo lỗi hoặc xin xoá tài khoản đều gửi về địa chỉ này.</p>
+            <div className="relative mt-4 flex flex-wrap gap-3">
+              <a
+                href="mailto:tranlhu.k66gdmn-d@utb.edu.vn"
+                className="shine inline-flex min-h-11 items-center gap-2 rounded-full bg-pink px-5 font-bold text-white shadow transition-transform duration-300 ease-bounce hover:-translate-y-0.5 active:scale-95"
+              >
+                <Icon name="mail" className="size-5" /> Gửi email
+              </a>
+              <CopyButton
+                text="tranlhu.k66gdmn-d@utb.edu.vn"
+                className="inline-flex min-h-11 items-center gap-2 rounded-full border-2 border-blue bg-white px-5 font-bold text-blue transition-transform duration-300 ease-bounce hover:-translate-y-0.5 active:scale-95"
+              />
+            </div>
+          </div>
+        </section>
+      </div>
 
       <section aria-labelledby="chinh-sach" className="space-y-2">
         <H2 id="chinh-sach">Chính sách bảo mật</H2>
