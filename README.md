@@ -42,7 +42,7 @@ Supabase lo phần tài khoản (đăng ký, đăng nhập, quên mật khẩu).
      - hoặc Brevo: host `smtp-relay.brevo.com`, cổng `587`, username và SMTP key lấy ở trang SMTP & API của Brevo; email người gửi phải được xác minh trong Brevo;
    - xem lại số email được gửi mỗi giờ ở **Authentication → Rate Limits**;
    - thử “Quên mật khẩu” với một email ngoài nhóm, nhận được rồi mới **bật “Confirm email”**.
-5. **Mẫu email tiếng Việt** (Authentication → Emails → Templates). Giữ nguyên `{{ .ConfirmationURL }}`, Supabase tự thay bằng link.
+5. **Mẫu email tiếng Việt** (Authentication → Emails → Templates). Supabase tự thay các chỗ `{{ … }}` bằng link, mã và email thật.
    - **Confirm signup:** Subject `Xác nhận tài khoản Thế giới Âm thanh`, Body:
      ```html
      <h2>Chào mừng đến với Thế giới Âm thanh!</h2>
@@ -51,6 +51,10 @@ Supabase lo phần tài khoản (đăng ký, đăng nhập, quên mật khẩu).
      <p>Nếu bạn không đăng ký, hãy bỏ qua email này.</p>
      ```
    - **Reset password:** Subject `Đặt lại mật khẩu Thế giới Âm thanh`. Body: mở file [`docs/email/reset-password.html`](docs/email/reset-password.html), chép **toàn bộ** nội dung dán vào ô Body (giao diện giống web: banner, logo, nút hồng, footer xanh). Ảnh trong email lấy từ `https://edtech-music.vercel.app/email/` (thư mục `web/public/email/`). Xem trước: `docs/email/preview-desktop.png`, `preview-mobile.png`.
+     - Mọi link trong mẫu trỏ về web (`https://edtech-music.vercel.app/dat-lai-mat-khau/?token_hash={{ .TokenHash }}&type=recovery`), không có link `supabase.co`, nên email ít bị xếp vào Spam hơn.
+     - Đã dán mẫu cũ (có `{{ .ConfirmationURL }}`) thì dán lại file mới. Đổi tên miền thì sửa các link trong file.
+     - Link đặt lại mật khẩu không bao giờ tạo phiên đăng nhập lưu trong trình duyệt: link chỉ được kiểm tra lúc bấm “Lưu mật khẩu mới”, rồi web đăng nhập bằng mật khẩu mới.
+     - Link kiểu cũ (từ email gửi trước khi đổi mẫu) bị từ chối: trang báo link đã cũ, bấm “Gửi lại link” để nhận link mới.
 6. **Lấy khoá:** lấy **Project URL** (dạng `https://<mã>.supabase.co`, ở nút Connect của project) và **Publishable key** (Project Settings → API Keys, bắt đầu bằng `sb_publishable_`). Hai giá trị này công khai, an toàn khi gửi. **Tuyệt đối không dùng hay gửi secret key** (`sb_secret_…` hoặc `service_role`).
    - Vercel: Settings → Environment Variables, chọn **Production** và **Preview**, rồi Redeploy (biến được gắn vào web lúc build):
      - `NEXT_PUBLIC_SUPABASE_URL` = Project URL;

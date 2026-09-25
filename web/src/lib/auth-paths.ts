@@ -2,6 +2,7 @@
 // values and tests import this file directly. Paths use the site's trailing slash.
 export const AUTH_KEY = "tgat-auth"; // localStorage key of the Supabase session
 export const HOME = "/trang-chu/"; // app home once logged in
+export const RESET_PATH = "/dat-lai-mat-khau/"; // new password, from the email link or the account menu
 
 // Everything else, unknown URLs included, needs login.
 export const PUBLIC_PATHS: readonly string[] = ["/", "/gioi-thieu/", "/dang-nhap/", "/dang-ky/", "/quen-mat-khau/", "/dat-lai-mat-khau/"];

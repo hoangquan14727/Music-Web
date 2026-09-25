@@ -73,6 +73,12 @@ Trang ghi **công khai** thì ai cũng xem được; mọi trang khác (kể c�
 - **Phiên đăng nhập** lưu trong trình duyệt (`localStorage`, khoá `tgat-auth`):
   - sau lần đăng nhập đầu vẫn dùng được khi mất mạng; mất mạng không bị đăng xuất;
   - đăng xuất ở tab này thì tab khác cũng đăng xuất.
+- **Link “Quên mật khẩu”:**
+  - link trong email trỏ về web (`/dat-lai-mat-khau/?token_hash=…`), không qua `supabase.co` (ít vào Spam hơn);
+  - mở link chưa tạo phiên đăng nhập nào: mã trong link rời thanh địa chỉ ngay, chỉ nằm trong trang đang mở; header vẫn là “Đăng nhập” / “Đăng ký”;
+  - link chỉ được kiểm tra lúc bấm “Lưu mật khẩu mới”. Phiên của link chỉ nằm trong bộ nhớ trang, không bao giờ lưu vào trình duyệt, và bị huỷ ngay sau khi đổi mật khẩu; web đăng nhập bằng mật khẩu mới rồi vào `/trang-chu`;
+  - rời trang, tải lại, Back/Forward, đóng tab: không còn gì để dùng lại (máy dùng chung an toàn), trang báo link không còn dùng được;
+  - link kiểu cũ (`#access_token=…`, email gửi trước khi đổi mẫu) bị từ chối ở mọi trang: chuyển sang `/dat-lai-mat-khau/?link=cu` với lời nhắn gửi lại link mới.
 - **Menu tài khoản** (vòng tròn chữ cái đầu tên ở header; trên điện thoại nằm trong menu): tên, vai trò, email, “Đổi mật khẩu”, “Đăng xuất”. Đăng xuất thì về trang bìa, bấm Back cũng không vào lại được.
 - **Thiếu 2 biến Supabase:** build trên máy chỉ cảnh báo, form báo “Đăng nhập chưa được cấu hình”; build trên Vercel báo lỗi và web đang chạy giữ bản cũ.
 - Code: `web/src/lib/auth.ts`, `web/src/lib/auth-paths.ts`, `web/src/components/AuthGuard.tsx`, script đầu trang trong `web/src/app/layout.tsx`, các trang trong `web/src/app/(public)/`.
@@ -162,7 +168,7 @@ Toàn bộ hiệu ứng làm bằng CSS và một ít React, không thêm thư v
   - Đoán ở mức 5–6 tuổi hiện đúng 4 hình.
   - Nối: chạm hình trước khi chạm loa thì có nhắc.
   - Từ khi có đăng nhập, kịch bản tạo sẵn một phiên giả trong `tgat-auth` nên chạy không cần mạng hay tài khoản thật.
-- **Kịch bản đăng nhập:** `web/tests/e2e-auth.mcp.js` (khách bị chuyển sang trang đăng nhập, `/` là trang bìa, `next` độc hại bị chặn, đăng xuất rồi bấm Back không vào lại được).
+- **Kịch bản đăng nhập:** `web/tests/e2e-auth.mcp.js` (khách bị chuyển sang trang đăng nhập, `/` là trang bìa, `next` độc hại bị chặn, đăng xuất rồi bấm Back không vào lại được, link đặt lại mật khẩu không bao giờ lưu phiên của link — có bước đổi mật khẩu thành công với Supabase giả lập, link cũ bị từ chối).
 - **Trình phát nhạc:** vẫn phát khi chuyển trang và khi tìm kiếm từ header, dừng khi có hiệu ứng âm thanh. Trên điện thoại, nút điều khiển xuống hàng riêng.
 - **Bộ lọc Góc giáo viên:** 8 → 6 → 2 gợi ý. “Tạo hoạt động” đổi được bộ âm thanh.
 - **Bố cục:** mọi vùng chạm của trẻ ≥ 64 px; không tràn ngang ở 375 px; Tab/Enter dùng được ở khu người lớn; banner đủ nút ở 1024 px (iPad ngang); ở 1024–1279 px header có nút kính lúp dẫn tới ô tìm kiếm.

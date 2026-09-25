@@ -12,6 +12,10 @@ const notify = () => listeners.forEach((f) => f());
 
 let client: Promise<GoTrueClient | null> | undefined;
 
+// A password-reset link (?token_hash… or an old #access_token…, both with type=recovery)
+// never logs this client in: ResetForm checks it with a client of its own (resetAuth).
+const RECOVERY = /type=recovery/;
+
 // The SDK loads on first use only (kept out of every page's first load).
 // Null when not configured (or on the server); rejects if the chunk can't load.
 export function getAuth(): Promise<GoTrueClient | null> {
@@ -24,7 +28,8 @@ export function getAuth(): Promise<GoTrueClient | null> {
         storageKey: AUTH_KEY,
         persistSession: true,
         autoRefreshToken: true,
-        detectSessionInUrl: true, // links from emails land with #access_token=…
+        // Links from emails land with #access_token=… (app/layout sends reset links away first).
+        detectSessionInUrl: (url, p) => !RECOVERY.test(url.search + url.hash) && Boolean(p.access_token || p.error || p.error_description || p.error_code),
         flowType: "implicit",
       });
       c.onAuthStateChange(notify); // useSession re-reads storage, whatever the event says
@@ -36,6 +41,21 @@ export function getAuth(): Promise<GoTrueClient | null> {
     },
   );
   return client;
+}
+
+// One reset link's client: persistSession false keeps its session in memory (never in
+// localStorage, never broadcast to other tabs), so it is gone with the page.
+export async function resetAuth(): Promise<GoTrueClient> {
+  const { AuthClient } = await import("@supabase/auth-js");
+  return new AuthClient({
+    url: `${URL_}/auth/v1`,
+    headers: { apikey: KEY! },
+    storageKey: "tgat-reset",
+    persistSession: false,
+    autoRefreshToken: false,
+    detectSessionInUrl: false,
+    flowType: "implicit",
+  });
 }
 
 let raw: string | null = null;
@@ -67,7 +87,8 @@ function subscribe(onChange: () => void) {
   const onStorage = (e: StorageEvent) => (e.key === AUTH_KEY || e.key === null) && onChange(); // other tabs
   addEventListener("storage", onStorage);
   // The client refreshes tokens and reads email links; a guest elsewhere doesn't need it yet.
-  if (readSession() || /access_token|error_description/.test(location.hash)) getAuth().catch(() => {});
+  const h = location.hash;
+  if (readSession() || (/access_token|error_description/.test(h) && !RECOVERY.test(h))) getAuth().catch(() => {});
   return () => {
     listeners.delete(onChange);
     removeEventListener("storage", onStorage);

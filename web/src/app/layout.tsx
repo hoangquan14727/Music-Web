@@ -3,7 +3,7 @@ import { Baloo_2, Nunito } from "next/font/google";
 import { Intro } from "@/components/Loader";
 import NavPending from "@/components/NavPending";
 import AuthGuard from "@/components/AuthGuard";
-import { AUTH_KEY, HOME, PUBLIC_PATHS, loginUrl } from "@/lib/auth-paths";
+import { AUTH_KEY, HOME, PUBLIC_PATHS, RESET_PATH, loginUrl } from "@/lib/auth-paths";
 import "./globals.css";
 
 // Both fonts ship a Vietnamese subset (Comic Neue does not). next/font
@@ -27,6 +27,9 @@ export const viewport: Viewport = {
 };
 
 // Before first paint:
+// - an old-style reset link (#access_token…&type=recovery, on any page): its token leaves
+//   the address bar before any script can read it and the tab lands on RESET_PATH?link=cu,
+//   which refuses it. Reset links never make a stored session (see ResetForm);
 // - the login gate (lib/auth-paths; also on a Back/Forward cache restore): a guest on
 //   a non-public page goes to /dang-nhap/?next=…, a logged-in visitor on / to HOME.
 //   The page is hidden meanwhile and nothing below runs; the "tgat-hop" flag lets the
@@ -44,8 +47,10 @@ export const viewport: Viewport = {
 //   (parsed, fonts, hero image decoded, window load), shown ≥ 0.95 s, done by ~2.4 s.
 //   A tap, key, wheel or swipe skips; the click that follows a skip tap is swallowed.
 const HEAD_SCRIPT = `(function(){var d=document.documentElement;
-function gate(){var p=location.pathname,s,to="";p=p.slice(-1)==="/"?p:p+"/";try{s=JSON.parse(localStorage.getItem(${JSON.stringify(AUTH_KEY)}))}catch(e){}
-if(!(s&&s.refresh_token)){if(${JSON.stringify(PUBLIC_PATHS)}.indexOf(p)<0)to=${JSON.stringify(loginUrl(""))}+encodeURIComponent(location.pathname+location.search+location.hash)}else if(p==="/")to=${JSON.stringify(HOME)};
+function gate(){var p=location.pathname,s,to="",r=${JSON.stringify(RESET_PATH)},o=r+"?link=cu";p=p.slice(-1)==="/"?p:p+"/";
+if(/type=recovery/.test(location.hash)){try{history.replaceState(null,"",p===r?o:location.pathname+location.search)}catch(e){}if(p!==r)to=o}
+else{try{s=JSON.parse(localStorage.getItem(${JSON.stringify(AUTH_KEY)}))}catch(e){}
+if(!(s&&s.refresh_token)){if(${JSON.stringify(PUBLIC_PATHS)}.indexOf(p)<0)to=${JSON.stringify(loginUrl(""))}+encodeURIComponent(location.pathname+location.search+location.hash)}else if(p==="/")to=${JSON.stringify(HOME)}}
 if(!to)return;d.style.visibility="hidden";try{sessionStorage.setItem("tgat-hop","1")}catch(e){}location.replace(to);return 1}
 if(gate())return;function sync(){try{if(localStorage.getItem("tgat-motion")==="off"&&!d.dataset.motion)d.dataset.motion="off"}catch(e){}}
 sync();new MutationObserver(sync).observe(d,{attributeFilter:["data-motion"]});

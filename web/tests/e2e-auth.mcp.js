@@ -2,8 +2,10 @@
 // filename: web/tests/e2e-auth.mcp.js). Needs the static site built with the two
 // NEXT_PUBLIC_SUPABASE_* values set (placeholders are fine) and served:
 //   npm run build && npx serve out -l 4321
-// No network needed: the logged-in half uses a fake stored session. Runs in its own
-// browser context (in fresh tabs of the MCP one when that has no browser()).
+// Logged-in checks use fake stored sessions, no account. The bad reset-link check calls
+// Supabase's verify endpoint (with placeholders it can't connect, which also passes); the
+// successful reset runs against a mocked Supabase (page.route).
+// Runs in its own browser context (in fresh tabs of the MCP one when that has no browser()).
 // Returns a short log; every failed check starts with FAIL.
 // eslint-disable-next-line @typescript-eslint/no-unused-expressions -- the file is one function expression
 async (page) => {
@@ -69,8 +71,19 @@ async (page) => {
     const [sw, cw] = await p.evaluate(() => [document.documentElement.scrollWidth, document.documentElement.clientWidth]);
     check(`${at} no horizontal overflow at 390px`, sw <= cw, `${sw}/${cw}`);
   };
-  // Expected noise: the /xyz/ 404 itself; sign-out calling the (placeholder) Supabase host.
+  // Expected noise: the /xyz/ 404 itself; sign-out and the bad reset link calling Supabase.
   const unexpected = () => errors.filter((e) => !/\/xyz\/|\/auth\/v1\//.test(e));
+  // Fake long-lived session (unsigned JWT; the SDK takes it offline), stored the way Supabase stores it.
+  const seed = (p) =>
+    p.evaluate(() => {
+      const b64 = (o) => btoa(JSON.stringify(o)).replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
+      const exp = 4102444800;
+      const user = { id: 'e2e', aud: 'authenticated', email: 'e2e@example.com', user_metadata: { full_name: 'Cô Test', role: 'giao-vien' }, app_metadata: {} };
+      const jwt = `${b64({ alg: 'none', typ: 'JWT' })}.${b64({ sub: user.id, aud: user.aud, role: 'authenticated', email: user.email, exp })}.`;
+      localStorage.setItem('tgat-auth', JSON.stringify({ access_token: jwt, refresh_token: 'e2e', token_type: 'bearer', expires_in: 3600, expires_at: exp, user }));
+    });
+  const stored = (p) => p.evaluate(() => localStorage.getItem('tgat-auth'));
+  const accountMenu = (p) => p.locator('summary[aria-label="Tài khoản"]:visible').or(p.locator('summary:visible', { hasText: 'Tài khoản' })).first().click();
 
   if (!browser) {
     // Shared profile: start logged out.
@@ -116,17 +129,11 @@ async (page) => {
   check('guest: no console errors', !unexpected().length, unexpected().slice(0, 3).join(' || '));
   errors.length = 0;
 
-  // ── Logged in (fake long-lived session, unsigned JWT; the SDK takes it offline) ──
+  // ── Logged in ──
   const u = await open();
   await u.setViewportSize({ width: 1280, height: 800 }); // the account menu is desktop (lg+)
   await go(u, '/gioi-thieu/');
-  await u.evaluate(() => {
-    const b64 = (o) => btoa(JSON.stringify(o)).replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
-    const exp = 4102444800;
-    const user = { id: 'e2e', aud: 'authenticated', email: 'e2e@example.com', user_metadata: { full_name: 'Cô Test', role: 'giao-vien' }, app_metadata: {} };
-    const jwt = `${b64({ alg: 'none', typ: 'JWT' })}.${b64({ sub: user.id, aud: user.aud, role: 'authenticated', email: user.email, exp })}.`;
-    localStorage.setItem('tgat-auth', JSON.stringify({ access_token: jwt, refresh_token: 'e2e', token_type: 'bearer', expires_in: 3600, expires_at: exp, user }));
-  });
+  await seed(u);
   await u.reload();
   const inside = await u.getByRole('link', { name: 'Vào học', exact: true }).waitFor({ timeout: 5000 }).then(() => true, () => false);
   check('logged in: public header shows "Vào học"', inside);
@@ -138,7 +145,7 @@ async (page) => {
   await go(u, '/dang-nhap/?next=%2F%2Fevil.com', '/trang-chu/');
   check('logged in: ?next=//evil.com -> /trang-chu/', u.url() === BASE + '/trang-chu/', u.url());
 
-  await u.locator('summary[aria-label="Tài khoản"]:visible').or(u.locator('summary:visible', { hasText: 'Tài khoản' })).first().click();
+  await accountMenu(u);
   check('account menu shows the name', await u.locator('details[open]').getByText('Cô Test').first().isVisible());
   await u.getByRole('button', { name: 'Đăng xuất' }).first().click();
   await u.waitForURL((x) => x.pathname === '/', { timeout: 10000 }).catch(() => {});
@@ -153,8 +160,146 @@ async (page) => {
   seen = await painted(u);
   check('Back after sign-out shows no gated page', ['/dang-nhap/', '/'].includes(path(u)) && !seen.includes('SHOWN'), `${u.url()} ${seen}`);
   check('logged in + sign-out: no console errors', !unexpected().length, unexpected().slice(0, 3).join(' || '));
+  errors.length = 0;
+
+  // ── Password-reset links: their session is never stored ──
+  for (const p of [g, l, u]) await p.close(); // other tabs would react to the seeded sessions
+  const r = await open();
+  await r.setViewportSize({ width: 1280, height: 800 });
+  const hdr = r.locator('header');
+  const guestHeader = async () =>
+    (await hdr.getByRole('link', { name: 'Đăng nhập', exact: true }).isVisible()) &&
+    (await hdr.getByRole('link', { name: 'Đăng ký', exact: true }).isVisible()) &&
+    (await hdr.getByRole('link', { name: 'Vào học', exact: true }).count()) === 0;
+  const resetForm = (p) => p.getByLabel('Nhập lại mật khẩu', { exact: true }).waitFor({ timeout: 8000 }).then(() => true, () => false);
+  const alertText = async (p) => {
+    const a = p.locator('main [role=alert]').filter({ hasText: /\S/ }).first(); // not Next's route announcer
+    await a.waitFor({ timeout: 15000 }).catch(() => {});
+    return (await a.innerText().catch(() => '')).trim();
+  };
+  const save = async (p, pw) => {
+    await p.getByLabel('Mật khẩu', { exact: true }).fill(pw);
+    await p.getByLabel('Nhập lại mật khẩu', { exact: true }).fill(pw);
+    await p.getByRole('button', { name: 'Lưu mật khẩu mới' }).click();
+  };
+  const LINK = '/dat-lai-mat-khau/?token_hash=abc&type=recovery';
+
+  await go(r, LINK, '/dat-lai-mat-khau/');
+  check('reset link: new-password form shown', await resetForm(r));
+  check('reset link: token gone from the address bar', r.url() === BASE + '/dat-lai-mat-khau/', r.url());
+  check('reset link: guest header ("Đăng nhập" + "Đăng ký", no "Vào học")', await guestHeader());
+  check('reset link: nothing stored', (await stored(r)) === null);
+  await r.reload();
+  let said = await alertText(r);
+  check('reset link: a reload finds no token', /không còn dùng được/.test(said), said);
+  await go(r, LINK, '/dat-lai-mat-khau/');
+  await resetForm(r);
+  await hdr.locator('a.chrome-logo').click();
+  await r.waitForURL((x) => x.pathname === '/', { timeout: 8000 }).catch(() => {});
+  check('reset link: leaving by the logo stores nothing', path(r) === '/' && (await stored(r)) === null, r.url());
+  await r.goBack().catch(() => {});
+  await r.waitForURL((x) => x.pathname === '/dat-lai-mat-khau/', { timeout: 8000 }).catch(() => {});
+  said = await alertText(r);
+  check('reset link: Back to it finds no token, nothing stored', /không còn dùng được/.test(said) && !(await r.getByLabel('Nhập lại mật khẩu', { exact: true }).count()) && (await stored(r)) === null, `${r.url()} ${said}`);
+  // Off to another site and Back (from the Back/Forward cache when the browser keeps the page).
+  await go(r, LINK, '/dat-lai-mat-khau/');
+  await resetForm(r);
+  check('reset link: no token in the history entry', !(await r.evaluate(() => location.href + JSON.stringify(history.state))).includes('token_hash'));
+  await r.evaluate(() => (window.__e2eKept = 1));
+  await r.goto(BASE.replace('127.0.0.1', 'localhost') + '/gioi-thieu/').catch(() => {});
+  await r.goBack().catch(() => {});
+  await r.waitForURL((x) => x.pathname === '/dat-lai-mat-khau/', { timeout: 8000 }).catch(() => {});
+  const kept = await r.evaluate(() => window.__e2eKept === 1).catch(() => false);
+  said = await alertText(r);
+  check(`reset link: Back from another site finds no token (${kept ? 'Back/Forward cache' : 'reloaded'})`, /không còn dùng được/.test(said) && !(await r.getByLabel('Nhập lại mật khẩu', { exact: true }).count()) && (await stored(r)) === null, `${r.url()} ${said}`);
+  // The cache keeps the page as it was left: pagehide must drop the token (fired by hand here).
+  await go(r, LINK, '/dat-lai-mat-khau/');
+  await resetForm(r);
+  await r.evaluate(() => dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true })));
+  said = await alertText(r);
+  check('reset link: pagehide drops the token', /không còn dùng được/.test(said) && !(await r.getByLabel('Nhập lại mật khẩu', { exact: true }).count()), said);
+
+  // The real Supabase verify endpoint answers a bad token_hash with an error.
+  await go(r, LINK, '/dat-lai-mat-khau/');
+  await resetForm(r);
+  await save(r, 'Matkhau-moi-123');
+  said = await alertText(r);
+  check('bad token: Vietnamese expired/used message', /^(Link đã hết hạn hoặc đã được dùng|Không kết nối được máy chủ)/.test(said), said);
+  check('bad token: "Gửi lại link" -> /quen-mat-khau/', /Không kết nối/.test(said) || (await r.getByRole('link', { name: 'Gửi lại link' }).getAttribute('href')) === '/quen-mat-khau/');
+  check('bad token: nothing stored', (await stored(r)) === null);
+
+  // Old implicit links (#access_token…&type=recovery) are refused on any page.
+  for (const from of ['/', '/dat-lai-mat-khau/']) {
+    await go(r, `${from}#access_token=x.y.z&type=recovery`, '/dat-lai-mat-khau/');
+    said = await alertText(r);
+    check(`old link on ${from}: -> ?link=cu, hash gone, old-link message`, r.url() === BASE + '/dat-lai-mat-khau/?link=cu' && /đã cũ/.test(said), `${r.url()} ${said}`);
+    check(`old link on ${from}: nothing stored`, (await stored(r)) === null);
+  }
+
+  // A successful reset against a mocked Supabase: the link's session stays in memory; the
+  // only session ever written to tgat-auth is the password login that follows.
+  const m = await open();
+  await m.addInitScript(() => {
+    const set = Storage.prototype.setItem;
+    window.__writes = [];
+    Storage.prototype.setItem = function (k, v) {
+      if (this === localStorage) window.__writes.push([k, String(v)]);
+      return set.call(this, k, v);
+    };
+  });
+  let REC = '', PW = '';
+  const calls = [];
+  const user = { id: 'e2e-r', aud: 'authenticated', role: 'authenticated', email: 'reset@example.com', user_metadata: { full_name: 'Cô Reset', role: 'giao-vien' }, app_metadata: {} };
+  const session = (t) => JSON.stringify({ access_token: t, refresh_token: t === REC ? 'rec-refresh' : 'pw-refresh', token_type: 'bearer', expires_in: 3600, expires_at: 4102444800, user });
+  await m.route('**/auth/v1/**', (route) => {
+    const req = route.request();
+    const cors = { 'access-control-allow-origin': BASE, 'access-control-allow-methods': 'GET,POST,PUT,OPTIONS', 'access-control-allow-headers': req.headers()['access-control-request-headers'] || '*' };
+    if (req.method() === 'OPTIONS') return route.fulfill({ status: 204, headers: cors });
+    const at = req.url().replace(/^.*\/auth\/v1/, '');
+    const bearer = (req.headers().authorization || '').replace('Bearer ', '');
+    calls.push(`${req.method()} ${at}${bearer === REC ? ' rec' : bearer === PW ? ' pw' : ''}`);
+    const json = (body) => route.fulfill({ status: 200, headers: { ...cors, 'content-type': 'application/json' }, body });
+    if (at.startsWith('/verify')) return json(session(REC));
+    if (at.startsWith('/user') && req.method() === 'PUT') return json(JSON.stringify(user));
+    if (at.startsWith('/logout')) return route.fulfill({ status: 204, headers: cors });
+    if (at.startsWith('/token?grant_type=password')) return json(session(PW));
+    return route.fulfill({ status: 500, headers: { ...cors, 'content-type': 'application/json' }, body: '{"code":"unexpected"}' });
+  });
+  await go(m, LINK, '/dat-lai-mat-khau/');
+  [REC, PW] = await m.evaluate(() => {
+    const b64 = (o) => btoa(JSON.stringify(o)).replace(/=+$/, '').replace(/\+/g, '-').replace(/\//g, '_');
+    const jwt = (sid) => `${b64({ alg: 'none', typ: 'JWT' })}.${b64({ sub: 'e2e-r', aud: 'authenticated', role: 'authenticated', email: 'reset@example.com', exp: 4102444800, session_id: sid })}.`;
+    return [jwt('recovery'), jwt('password')];
+  });
+  await resetForm(m);
+  await save(m, 'Matkhau-moi-123');
+  await m.waitForURL((x) => x.pathname === '/trang-chu/', { timeout: 15000 }).catch(() => {});
+  check('mocked reset: ends on /trang-chu/', path(m) === '/trang-chu/', path(m) === '/trang-chu/' ? '' : `${m.url()} ${await alertText(m)}`);
+  const want = ['POST /verify', 'PUT /user rec', 'POST /logout?scope=local rec', 'POST /token?grant_type=password'];
+  check('mocked reset: verify, PUT user and logout with the link session, then password login', JSON.stringify(calls) === JSON.stringify(want), JSON.stringify(calls));
+  const writes = await m.evaluate(() => window.__writes);
+  const authWrites = writes.filter(([k]) => k === 'tgat-auth').map(([, v]) => v);
+  check('mocked reset: tgat-auth only ever written with the password session', authWrites.length > 0 && authWrites.every((v) => v.includes(PW) && !v.includes(REC)), `${authWrites.length} write(s)`);
+  check('mocked reset: the link session never reached localStorage', !writes.some(([, v]) => v.includes(REC) || v.includes('rec-refresh')), JSON.stringify(writes.map(([k]) => k)));
+  check('mocked reset: stored session is the password one', ((await stored(m)) || '').includes(PW));
+  await m.unroute('**/auth/v1/**');
+  await m.evaluate(() => localStorage.removeItem('tgat-auth'));
+  await m.close();
+
+  // "Đổi mật khẩu" with a normal session: unchanged.
+  await go(r, '/gioi-thieu/');
+  await seed(r);
+  await go(r, '/trang-chu/');
+  check('normal session: /trang-chu/ opens', path(r) === '/trang-chu/', r.url());
+  await accountMenu(r);
+  await r.locator('details[open]').getByRole('link', { name: 'Đổi mật khẩu' }).click();
+  await r.waitForURL((x) => x.pathname === '/dat-lai-mat-khau/', { timeout: 8000 }).catch(() => {});
+  check('normal session: "Đổi mật khẩu" shows the form', path(r) === '/dat-lai-mat-khau/' && (await resetForm(r)), r.url());
+  check('normal session: header keeps "Vào học", session kept', (await hdr.getByRole('link', { name: 'Vào học', exact: true }).isVisible()) && (await stored(r)) !== null);
+  await r.evaluate(() => localStorage.removeItem('tgat-auth'));
+  check('reset links: no console errors', !unexpected().length, unexpected().slice(0, 3).join(' || '));
 
   if (browser) await ctx.close();
-  else for (const p of [g, l, u]) await p.close();
+  else await r.close();
   return log.join('\n');
 }

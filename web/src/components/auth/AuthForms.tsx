@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useId, useState, useSyncExternalStore } from "react";
+import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 import type { GoTrueClient } from "@supabase/auth-js";
 import Icon from "@/components/Icon";
-import { authMessage, configured, getAuth, readSession, ROLE, useSession } from "@/lib/auth";
+import { authMessage, configured, getAuth, resetAuth, ROLE, useSession } from "@/lib/auth";
 import { HOME } from "@/lib/auth-paths";
 
 // Account pages. Forms are uncontrolled and submit in onSubmit (a <form action>
@@ -143,8 +143,10 @@ const password = (f: FormData) => String(f.get("password") ?? "");
 function useAuthAction() {
   const [msg, setMsg] = useState<Msg>(configured ? null : OFF);
   const [pending, setPending] = useState(false);
+  const busy = useRef(false); // a second click before the re-render must not send twice
   const run = async (fn: (auth: GoTrueClient) => Promise<void>) => {
-    if (pending || !configured) return;
+    if (busy.current || !configured) return;
+    busy.current = true;
     setPending(true);
     setMsg(null);
     try {
@@ -153,6 +155,7 @@ function useAuthAction() {
     } catch (e) {
       setMsg({ text: authMessage(e) });
     }
+    busy.current = false;
     setPending(false);
   };
   return { msg, setMsg, pending, run };
@@ -398,45 +401,85 @@ export function ForgotForm() {
   );
 }
 
-// Reached from the reset email (#access_token…&type=recovery) or "Đổi mật khẩu" when logged in.
+const OLD_LINK = "Link này đã cũ hoặc hết hạn. Bạn hãy gửi lại link mới.";
+const NO_LINK = "Link đặt lại mật khẩu không còn dùng được. Bạn hãy gửi lại link mới.";
+
+// From the reset email (?token_hash=…&type=recovery) or "Đổi mật khẩu" when logged in.
+// A link's session is never stored: the token only lives in this component (the address
+// bar loses it at once) and is checked on save, in a client that keeps its session in
+// memory (resetAuth). Password changed, that session is revoked and a normal login with
+// the new password is the one stored. Old #access_token links are refused (app/layout).
 export function ResetForm() {
   const router = useRouter();
+  const session = useSession();
   const { msg, setMsg, pending, run } = useAuthAction();
   const [show, setShow] = useState(false);
-  const [link, setLink] = useState<"checking" | "ok" | { error: string }>("checking");
+  // null until the URL is read; "email": a link's token is held; "done": changed, log in
+  // again; anything else is what's wrong with the link ("" = no link came with the visit).
+  const [link, setLink] = useState<string | null>(null);
+  const token = useRef<string | null>(null);
+  const reset = useRef<GoTrueClient>(null); // the link's client once verified: a retry doesn't verify again
 
   useEffect(() => {
-    const err = linkError();
-    const bad = (text: string) => setLink(readSession() ? "ok" : { error: text }); // offline, still logged in: let them try
-    getAuth()
-      .then(async (auth) => {
-        if (!auth) return setLink("ok"); // not configured: the form says so
-        const { data } = await auth.getSession(); // waits for the SDK to read the email link
-        if (data.session) setLink("ok");
-        else bad(err || "Link đặt lại mật khẩu không còn dùng được. Bạn hãy gửi lại link mới.");
-      })
-      .catch((e) => bad(authMessage(e)));
+    const q = new URLSearchParams(location.search);
+    if (q.get("type") === "recovery" && q.get("token_hash")) {
+      token.current = q.get("token_hash");
+      history.replaceState(history.state, "", location.pathname); // a reload or Back finds no token (the state is Next's)
+    }
+    setLink(token.current ? "email" : q.get("link") === "cu" ? OLD_LINK : linkError());
+    // Leaving the page drops the link: a tab restored from the Back/Forward cache doesn't get it back.
+    const drop = () => {
+      token.current = reset.current = null;
+      setLink((l) => (l === "email" ? "" : l));
+    };
+    addEventListener("pagehide", drop);
+    return () => removeEventListener("pagehide", drop);
   }, []);
 
   const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const pw = password(new FormData(e.currentTarget));
     run(async (auth) => {
-      const { error } = await auth.updateUser({ password: pw });
-      if (error) throw error;
+      if (link !== "email") {
+        const { error } = await auth.updateUser({ password: pw });
+        if (error) throw error;
+      } else {
+        if (!reset.current) {
+          const c = await resetAuth();
+          const { data, error } = await c.verifyOtp({ token_hash: token.current!, type: "recovery" });
+          if (error && (!error.status || error.status === 429 || error.status >= 500)) throw error; // offline, busy: try again
+          if (error || !data.session) return setLink(authMessage({ code: "otp_expired" }));
+          reset.current = c;
+        }
+        const { data, error } = await reset.current.updateUser({ password: pw });
+        if (error) throw error; // e.g. too weak: fix it and save again
+        await reset.current.signOut({ scope: "local" }).catch(() => {}); // the link's session ends here
+        const { error: again } = await auth.signInWithPassword({ email: data.user.email ?? "", password: pw });
+        if (again) return setLink("done");
+      }
       setMsg({ text: "Đã lưu mật khẩu mới. Đang chuyển vào trang học…", ok: true });
       router.replace(HOME);
     });
   };
 
+  const error = link === "email" ? "" : link || (session === null && configured ? NO_LINK : ""); // not configured: the form says so
+
   return (
     <AuthCard title="Đặt mật khẩu mới" lead="Chọn mật khẩu mới cho tài khoản của bạn." mascot="listening" side="Một mật khẩu mới, thật dễ nhớ nhé!">
-      {link === "checking" ? (
+      {link === null || session === undefined ? (
         <p role="status" className="font-semibold text-ink">
           Đang kiểm tra link…
         </p>
-      ) : link === "ok" ? (
+      ) : link === "done" ? (
+        <Done>
+          <p>Đã đổi mật khẩu. Bạn hãy đăng nhập lại bằng mật khẩu mới.</p>
+          <Link href="/dang-nhap/" className={LINK}>
+            Đăng nhập
+          </Link>
+        </Done>
+      ) : !error ? (
         <form onSubmit={onSubmit} onInput={(e) => matchPasswords(e.currentTarget)} className="space-y-4">
+          {link === "email" && <p className="text-muted">Link trong email được kiểm tra khi bạn bấm “Lưu mật khẩu mới”.</p>}
           <NewPasswords show={show} />
           <ShowPassword show={show} setShow={setShow} />
           <Alert msg={msg} />
@@ -445,7 +488,7 @@ export function ResetForm() {
       ) : (
         <div className="space-y-4">
           <p role="alert" className="font-semibold text-pink-ink">
-            {link.error}
+            {error}
           </p>
           <Link href="/quen-mat-khau/" className={GHOST}>
             Gửi lại link <Icon name="arrow-right" className="size-5" />
