@@ -241,7 +241,7 @@ Toàn bộ hiệu ứng làm bằng CSS và một ít React, không thêm thư v
 
 ## 8. Nhóm cần bổ sung
 
-- **Tên nhóm, thành viên, đơn vị và thông tin liên hệ:** trang `/gioi-thieu` đang để ô trống. Điền vào mục “Nhóm thực hiện” và “Liên hệ” trong `web/src/app/(public)/gioi-thieu/page.tsx`. Mục Liên hệ cần có **email nhận yêu cầu xoá tài khoản** (Chính sách bảo mật hướng người dùng tới đó).
+- **Người thực hiện và liên hệ:** đã điền ở `/gioi-thieu/` — người thực hiện Lò Hà Uyên Trân; email liên hệ và nhận yêu cầu xoá tài khoản: tranlhu.k66gdmn-d@utb.edu.vn.
 - **Project Supabase** (README, mục “Cài Supabase”): tạo project, đặt 2 biến `NEXT_PUBLIC_SUPABASE_URL` và `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` trên Vercel (Production + Preview) **trước khi push**, và vào “Restore” khi project bị tạm dừng.
 - **SMTP miễn phí** (Gmail hoặc Brevo) để giáo viên, phụ huynh nhận được email xác nhận và email “Quên mật khẩu”; có SMTP rồi mới bật “Confirm email”.
 - Duyệt các âm thanh ghi ở mục 4 (nên thay bằng bản ghi ở Việt Nam nếu có) và bổ sung nhạc kể chuyện, nhạc thiếu nhi khi đã xin phép.

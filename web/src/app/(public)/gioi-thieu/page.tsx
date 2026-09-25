@@ -55,14 +55,19 @@ export default function AboutPage() {
         </p>
       </header>
 
-      <section aria-labelledby="nhom" className="space-y-2">
-        <H2 id="nhom">Nhóm thực hiện</H2>
-        <p className="reveal rounded-2xl border-2 border-dashed border-line bg-white p-4 text-muted">[Tên nhóm, thành viên và đơn vị — nhóm bổ sung]</p>
+      <section aria-labelledby="nguoi-thuc-hien" className="space-y-2">
+        <H2 id="nguoi-thuc-hien">Người thực hiện</H2>
+        <p className="reveal rounded-2xl bg-white p-4 font-semibold text-ink shadow-sm">Lò Hà Uyên Trân</p>
       </section>
 
       <section aria-labelledby="lien-he" className="space-y-2">
         <H2 id="lien-he">Liên hệ</H2>
-        <p className="reveal rounded-2xl border-2 border-dashed border-line bg-white p-4 text-muted">[Email / số điện thoại liên hệ — nhóm bổ sung]</p>
+        <p className="reveal break-all rounded-2xl bg-white p-4 text-ink shadow-sm">
+          Email:{" "}
+          <a href="mailto:tranlhu.k66gdmn-d@utb.edu.vn" className="font-semibold text-blue underline">
+            tranlhu.k66gdmn-d@utb.edu.vn
+          </a>
+        </p>
       </section>
 
       <section aria-labelledby="chinh-sach" className="space-y-2">
@@ -72,7 +77,7 @@ export default function AboutPage() {
             Tài khoản chỉ dành cho người lớn: giáo viên và phụ huynh. Khi đăng ký, website thu họ và tên, email và vai trò (Giáo viên hoặc Phụ huynh).
           </li>
           <li className="reveal">
-            Các thông tin này được lưu ở Supabase (máy chủ khu vực Singapore) và chỉ dùng để đăng nhập và bảo vệ tài khoản. Mật khẩu được mã hoá, nhóm không xem được.
+            Các thông tin này được lưu ở Supabase (máy chủ khu vực Singapore) và chỉ dùng để đăng nhập và bảo vệ tài khoản. Mật khẩu được mã hoá, không ai xem được.
           </li>
           <li className="reveal">Để bảo vệ tài khoản, Supabase tự ghi thời điểm, địa chỉ IP và loại trình duyệt của mỗi lần đăng nhập.</li>
           <li className="reveal">Trình duyệt ghi nhớ phiên đăng nhập trên máy đang dùng cho tới khi bấm “Đăng xuất”.</li>
@@ -81,11 +86,15 @@ export default function AboutPage() {
           <li className="reveal">Không dùng quảng cáo, không dùng công cụ theo dõi người dùng.</li>
           <li className="reveal">Không có liên kết tới trang bên ngoài trong các khu vực dành cho trẻ.</li>
           <li className="reveal">
-            Muốn xoá tài khoản: gửi yêu cầu tới nhóm qua mục{" "}
+            Muốn xoá tài khoản: gửi email từ địa chỉ đã đăng ký tới{" "}
+            <a href="mailto:tranlhu.k66gdmn-d@utb.edu.vn" className="break-all text-blue underline">
+              tranlhu.k66gdmn-d@utb.edu.vn
+            </a>{" "}
+            (mục{" "}
             <a href="#lien-he" className="text-blue underline">
               Liên hệ
-            </a>{" "}
-            bằng email đã đăng ký. Nhóm sẽ xoá tài khoản cùng họ tên, email và vai trò đi kèm.
+            </a>
+            ). Tài khoản sẽ được xoá cùng họ tên, email và vai trò đi kèm.
           </li>
         </ul>
       </section>
