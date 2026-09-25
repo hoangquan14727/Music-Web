@@ -50,13 +50,7 @@ Supabase lo phần tài khoản (đăng ký, đăng nhập, quên mật khẩu).
      <p><a href="{{ .ConfirmationURL }}">Xác nhận tài khoản</a></p>
      <p>Nếu bạn không đăng ký, hãy bỏ qua email này.</p>
      ```
-   - **Reset password:** Subject `Đặt lại mật khẩu Thế giới Âm thanh`, Body:
-     ```html
-     <h2>Đặt lại mật khẩu</h2>
-     <p>Bấm vào link dưới đây để đặt mật khẩu mới. Link chỉ dùng được một lần.</p>
-     <p><a href="{{ .ConfirmationURL }}">Đặt mật khẩu mới</a></p>
-     <p>Nếu bạn không yêu cầu đổi mật khẩu, hãy bỏ qua email này; mật khẩu cũ vẫn dùng được.</p>
-     ```
+   - **Reset password:** Subject `Đặt lại mật khẩu Thế giới Âm thanh`. Body: mở file [`docs/email/reset-password.html`](docs/email/reset-password.html), chép **toàn bộ** nội dung dán vào ô Body (giao diện giống web: banner, logo, nút hồng, footer xanh). Ảnh trong email lấy từ `https://edtech-music.vercel.app/email/` (thư mục `web/public/email/`). Xem trước: `docs/email/preview-desktop.png`, `preview-mobile.png`.
 6. **Lấy khoá:** lấy **Project URL** (dạng `https://<mã>.supabase.co`, ở nút Connect của project) và **Publishable key** (Project Settings → API Keys, bắt đầu bằng `sb_publishable_`). Hai giá trị này công khai, an toàn khi gửi. **Tuyệt đối không dùng hay gửi secret key** (`sb_secret_…` hoặc `service_role`).
    - Vercel: Settings → Environment Variables, chọn **Production** và **Preview**, rồi Redeploy (biến được gắn vào web lúc build):
      - `NEXT_PUBLIC_SUPABASE_URL` = Project URL;
